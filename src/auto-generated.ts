@@ -3,11 +3,12 @@ const runTimeDependencies = {
     "externals": {
         "@youwol/cdn-client": "^2.0.4",
         "@youwol/flux-view": "^1.0.3",
-        "@youwol/vsf-core": "^0.1.1",
+        "@youwol/vsf-core": "^0.1.2",
         "rxjs": "^6.5.5",
         "three": "^0.152.0",
         "@youwol/fv-tabs": "^0.2.1",
-        "stats.js": "^0.17.0"
+        "stats.js": "^0.17.0",
+        "@types/three": "^0.152.0"
     },
     "includedInBundle": {
         "d3-dag": "0.8.2"
@@ -49,6 +50,11 @@ const externals = {
         "commonjs2": "stats.js",
         "root": "stats.js_APIv017"
     },
+    "@types/three": {
+        "commonjs": "@types/three",
+        "commonjs2": "@types/three",
+        "root": "@types/three_APIv0152"
+    },
     "rxjs/operators": {
         "commonjs": "rxjs/operators",
         "commonjs2": "rxjs/operators",
@@ -86,6 +92,10 @@ const exportedSymbols = {
     "stats.js": {
         "apiKey": "017",
         "exportedSymbol": "stats.js"
+    },
+    "@types/three": {
+        "apiKey": "0152",
+        "exportedSymbol": "@types/three"
     }
 }
 
@@ -109,7 +119,7 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-canvas',
         assetId:'QHlvdXdvbC92c2YtY2FudmFz',
-    version:'0.1.0',
+    version:'0.1.1-wip',
     shortDescription:"3D rendering of vs-flow's workflow ",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-canvas&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-canvas',
@@ -155,7 +165,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-canvas#0.1.0~dist/@youwol/vsf-canvas/${entry.name}.js`
+            `@youwol/vsf-canvas#0.1.1-wip~dist/@youwol/vsf-canvas/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
