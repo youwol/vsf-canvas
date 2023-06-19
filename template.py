@@ -38,10 +38,11 @@ template = Template(
                 # fv-tabs & stats.js are lazy installed at run time when needed
                 "@youwol/fv-tabs": "^0.2.1",
                 "stats.js": "^0.17.0",
+                # only dev times for '@types/three', but that way it is installed by consuming libs/apps
+                "@types/three": "^0.152.0",
             },
             includedInBundle={"d3-dag": "0.8.2"},
         ),
-        devTime={"@types/three": "^0.152.0"},
     ),
     bundles=Bundles(
         mainModule=MainModule(
