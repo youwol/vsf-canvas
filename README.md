@@ -1,6 +1,6 @@
 # @youwol/vsf-canvas
 
-3D rendering of vs-flow's workflow 
+3D rendering of vs-flow's workflow.
 
 This library is part of the hybrid cloud/local ecosystem
 [YouWol](https://platform.youwol.com/applications/@youwol/platform/latest).
