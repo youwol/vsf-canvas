@@ -9,6 +9,7 @@ import {
     Modules,
     HtmlTrait,
 } from '@youwol/vsf-core'
+import { WorkersPoolTypes } from '@youwol/cdn-client'
 import { StateTrait } from '../renderer3d.view'
 
 export class ActionsRowObject3d extends Group {
@@ -108,5 +109,24 @@ export class DisplayDocumentationAction implements VirtualDOM {
         module: Immutable<Modules.ImplementationTrait>
     }) {
         this.onclick = () => state.displayModuleDocumentation(module)
+    }
+}
+
+export class InspectWorkerAction implements VirtualDOM {
+    public readonly class
+    public readonly onclick: (ev: MouseEvent) => void
+    public readonly style = baseStyle
+    constructor({
+        state,
+        workersPool,
+        workerId,
+    }: {
+        state: Immutable<StateTrait>
+        workersPool: Immutable<WorkersPoolTypes.WorkersPool>
+        workerId: string
+    }) {
+        this.class = `fa-microchip ${baseClass}`
+        this.onclick = () =>
+            state.displayWorkerEnvironment({ workersPool, workerId })
     }
 }
