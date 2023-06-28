@@ -1,5 +1,4 @@
 import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
-
 import {
     Immutable$,
     Immutable,
@@ -26,6 +25,7 @@ export interface StateTrait {
     )
     displayModuleJournal(module: Immutable<Modules.ImplementationTrait>)
     displayModuleDocumentation(module: Immutable<Modules.ImplementationTrait>)
+    displayWorkerEnvironment(workerEnv: Projects.Workers.WorkerEnvironmentTrait)
 }
 
 export class Renderer3DView {
