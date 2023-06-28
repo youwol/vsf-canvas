@@ -245,7 +245,7 @@ export class Dynamic3dContent {
 
     expandNestedModule(from: ModuleBaseObject3d<NestedModule>) {
         const instancePool = from.entity.instance.instancePool$.value
-        const workflow = instancePool.toFlatWorkflowModel()
+        const workflow = instancePool.inspector().toFlatWorkflowModel()
         this.expandBase({
             from,
             instancePool,
