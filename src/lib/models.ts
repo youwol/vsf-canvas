@@ -36,10 +36,10 @@ export class InterLayersConnection {
 export class IntraLayerConnection {
     uid: string
     model: Immutable<Projects.ConnectionModel>
-    instance?: Immutable<Modules.Connection>
+    instance?: Immutable<Modules.ConnectionTrait>
     constructor(params: {
         model: Immutable<Projects.ConnectionModel>
-        instance?: Immutable<Modules.Connection>
+        instance?: Immutable<Modules.ConnectionTrait>
     }) {
         Object.assign(this, params)
         this.uid = this.model.uid
@@ -51,12 +51,12 @@ export class InterLayerConnection {
     startLayerId: string
     endLayerId: string
     model: Immutable<Projects.ConnectionModel>
-    instance?: Immutable<Modules.Connection>
+    instance?: Immutable<Modules.ConnectionTrait>
     constructor(params: {
         startLayerId: string
         endLayerId: string
         model: Immutable<Projects.ConnectionModel>
-        instance?: Immutable<Modules.Connection>
+        instance?: Immutable<Modules.ConnectionTrait>
     }) {
         Object.assign(this, params)
         this.uid = this.model.uid

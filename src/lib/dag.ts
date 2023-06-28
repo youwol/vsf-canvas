@@ -17,7 +17,9 @@ export function renderDag(
 ) {
     const layerModules = layer.moduleIds
     const allIds = [...layerModules, ...layer.children.map((l) => l.uid)]
-    function getStartingEntityId(connection: Immutable<Modules.Connection>) {
+    function getStartingEntityId(
+        connection: Immutable<Modules.ConnectionTrait>,
+    ) {
         if (layerModules.includes(connection.start.moduleId)) {
             return connection.start.moduleId
         }
