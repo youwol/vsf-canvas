@@ -121,9 +121,10 @@ export function nestedModuleInterConnections(
         // which modules serve as IO
         return []
     }
+    const instancePool = nestedModule.instancePool$.value
     // Below a 'fake' MacroModel is constructed, each instance of nestedModule.instancePool serves as both input &
     // output
-    const modules = nestedModule.instancePool$.value.modules.map(
+    const modules = instancePool.modules.map(
         (
             m: Modules.ImplementationTrait,
         ): Projects.ModuleModel & { inputSlotId; outputSlotId } => {
@@ -138,6 +139,12 @@ export function nestedModuleInterConnections(
             }
         },
     )
+    const macroModule = instancePool.modules[0]
+    const hasInput = Object.keys(macroModule.inputSlots).length > 0
+    const maybeInput = {
+        slotId: 0,
+        moduleId: macroModule.uid,
+    }
     const macro: Macro = {
         uid: nestedModule.uid,
         model: {
@@ -151,12 +158,7 @@ export function nestedModuleInterConnections(
                 uid: `layer_${nestedModule.uid}`,
                 moduleIds: modules.map((m) => m.uid),
             }),
-            inputs: modules
-                .map((m) => ({
-                    slotId: 0,
-                    moduleId: m.uid,
-                }))
-                .filter(({ slotId }) => slotId != undefined),
+            inputs: hasInput ? [maybeInput] : [],
             outputs: modules.map((m) => ({
                 slotId: 0,
                 moduleId: m.uid,
