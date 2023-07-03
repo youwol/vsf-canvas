@@ -97,7 +97,10 @@ async function createSupportingMacroInstancePool({
             })
         }),
     )
-    return new Projects.InstancePool({ modules: instances })
+    return new Projects.InstancePool({
+        modules: instances,
+        parentUid: workflow.uid,
+    })
 }
 
 export function prepareWorkflowAndInstancePool(

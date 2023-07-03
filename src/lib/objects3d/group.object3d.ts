@@ -45,6 +45,7 @@ export function groupObject3d({
         modules: parentLayer.project.instancePool.modules.filter((m) =>
             entity.model.moduleIds.includes(m.uid),
         ),
+        parentUid: entity.uid,
     })
     const instancePool$ = new BehaviorSubject(pool)
     const expandAction = new ExpandAction({

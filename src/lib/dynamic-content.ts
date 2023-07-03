@@ -565,8 +565,7 @@ export class LayerOrganizer {
             ...organizer.macros,
             ...organizer.nestedModules,
         ].find((maybeParent) => {
-            const instancePool = maybeParent.instance.instancePool$.value
-            return instancePool.modules.find((m) => m.uid == slot.moduleId)
+            return maybeParent.uid == this.instancePool.parentUid
         })
         if (!parentModule) {
             console.error('Can not find parentModule in parent layer', {
