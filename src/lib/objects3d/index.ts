@@ -1,5 +1,4 @@
 export * from './connection.object3d'
-export * from './ground.object3d'
 export * from './macro.object3d'
 export * from './group.object3d'
 export * from './nested-modules.object3d'
