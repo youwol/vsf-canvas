@@ -155,33 +155,6 @@ export class Environment3D {
         this.renderers.forEach((renderer) => {
             renderer.render(this.scene, this.camera)
         })
-        this.rayCaster.setFromCamera(this.pointer, this.camera)
-
-        const intersects = this.rayCaster.intersectObjects(this.selectables)
-
-        if (intersects.length > 0) {
-            const obj = intersects[0].object as unknown as SelectableObject3D
-            if (this.hovered && this.hovered == obj) {
-                return
-            }
-
-            if (this.hovered && this.hovered != obj) {
-                this.hovered.userData.selector &&
-                    this.hovered.userData.selector.onRestored()
-                this.hovered = obj
-            }
-            this.hovered = intersects[0].object as unknown as SelectableObject3D
-            this.hovered.userData.selector &&
-                this.hovered.userData.selector.onHovered()
-        }
-        if (
-            intersects.length == 0 &&
-            this.hovered &&
-            this.hovered.userData.selector
-        ) {
-            this.hovered.userData.selector.onRestored()
-            this.hovered = undefined
-        }
     }
 
     addSelectables(...objects: SelectableObject3D[]) {
@@ -297,6 +270,7 @@ export class Environment3D {
             const target = event.target as HTMLDivElement
             this.pointer.x = (event.offsetX / target.clientWidth) * 2 - 1
             this.pointer.y = -(event.offsetY / target.clientHeight) * 2 + 1
+            this.handleRayCaster()
         }
         this.htmlElementContainer.onclick = (ev) => {
             if (ev.shiftKey && this.frontLayer.parent) {
@@ -343,5 +317,34 @@ export class Environment3D {
     private animate() {
         this.animationFrameHandle = requestAnimationFrame(() => this.animate())
         this.render()
+    }
+
+    private handleRayCaster() {
+        this.rayCaster.setFromCamera(this.pointer, this.camera)
+        const intersects = this.rayCaster.intersectObjects(this.selectables)
+
+        if (intersects.length > 0) {
+            const obj = intersects[0].object as unknown as SelectableObject3D
+            if (this.hovered && this.hovered == obj) {
+                return
+            }
+
+            if (this.hovered && this.hovered != obj) {
+                this.hovered.userData.selector &&
+                    this.hovered.userData.selector.onRestored()
+                this.hovered = obj
+            }
+            this.hovered = intersects[0].object as unknown as SelectableObject3D
+            this.hovered.userData.selector &&
+                this.hovered.userData.selector.onHovered()
+        }
+        if (
+            intersects.length == 0 &&
+            this.hovered &&
+            this.hovered.userData.selector
+        ) {
+            this.hovered.userData.selector.onRestored()
+            this.hovered = undefined
+        }
     }
 }
