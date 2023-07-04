@@ -309,6 +309,7 @@ export class Dynamic3dContent {
                 this.isFrontLayer$.next(true)
                 setOpacity([from, ...connections], 1)
                 from.material.color = originalColor
+                this.environment3d.setFrontLayer(this)
             },
         })
         const group = dynamicContent3d.encapsulatingGroup
@@ -365,8 +366,7 @@ export class Dynamic3dContent {
             duration: 2,
             environment3d: this.environment3d,
         })
-        this.environment3d.frontLayer = dynamicContent3d
-        this.environment3d.addSelectables(...dynamicContent3d.getSelectables())
+        this.environment3d.setFrontLayer(dynamicContent3d)
     }
 }
 
