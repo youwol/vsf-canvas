@@ -63,12 +63,21 @@ export function macroInterConnections(
 
     const toConnectionModel = (
         i: number,
-        slotInside: Immutable<{ slotId: number | string; moduleId: string }>,
+        slotInside: Immutable<{
+            slotId: number | string
+            moduleId: string
+            // The attribute 'fakeParentSlotId' is a workaround for nested module case,
+            // see `nestedModuleInterConnections
+            fakeParentSlotId?: number
+        }>,
         type: 'parent->child' | 'child->parent',
     ) => {
         const p2c = type == 'parent->child'
         const slotMacro = {
-            slotId: i,
+            slotId:
+                slotInside.fakeParentSlotId === undefined
+                    ? i
+                    : slotInside.fakeParentSlotId,
             moduleId: macro.uid,
         }
         const finder = parentLayer.layerOrganizer
@@ -123,7 +132,8 @@ export function nestedModuleInterConnections(
     }
     const instancePool = nestedModule.instancePool$.value
     // Below a 'fake' MacroModel is constructed, each instance of nestedModule.instancePool serves as both input &
-    // output
+    // output.
+    // The attribute 'fakeParentSlotId' is a workaround to handle the '*MapMacro' modules connections.
     const modules = instancePool.modules.map(
         (
             m: Modules.ImplementationTrait,
@@ -141,10 +151,11 @@ export function nestedModuleInterConnections(
     )
     const macroModule = instancePool.modules[0]
     const hasInput = Object.keys(macroModule.inputSlots).length > 0
-    const maybeInput = {
+    const maybeInputs = instancePool.modules.map((m) => ({
         slotId: 0,
-        moduleId: macroModule.uid,
-    }
+        moduleId: m.uid,
+        fakeParentSlotId: 0,
+    }))
     const macro: Macro = {
         uid: nestedModule.uid,
         model: {
@@ -158,10 +169,11 @@ export function nestedModuleInterConnections(
                 uid: `layer_${nestedModule.uid}`,
                 moduleIds: modules.map((m) => m.uid),
             }),
-            inputs: hasInput ? [maybeInput] : [],
+            inputs: hasInput ? maybeInputs : [],
             outputs: modules.map((m) => ({
                 slotId: 0,
                 moduleId: m.uid,
+                fakeParentSlotId: 0,
             })),
         },
         instance: nestedModule,
