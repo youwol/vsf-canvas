@@ -25,7 +25,9 @@ export interface StateTrait {
     )
     displayModuleJournal(module: Immutable<Modules.ImplementationTrait>)
     displayModuleDocumentation(module: Immutable<Modules.ImplementationTrait>)
-    displayWorkerEnvironment(workerEnv: Projects.Workers.WorkerEnvironmentTrait)
+    displayWorkerEnvironment(
+        workerEnv: Immutable<Projects.Workers.WorkerEnvironmentTrait>,
+    )
 }
 
 export class Renderer3DView {
