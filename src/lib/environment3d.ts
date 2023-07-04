@@ -55,7 +55,7 @@ export class Environment3D {
     public hovered: SelectableObject3D
     public readonly selected$: ReplaySubject<unknown>
     public readonly rootGroup = new Group()
-    public frontLayer: Dynamic3dContent
+    public frontLayer: Immutable<Dynamic3dContent>
     private subscriptions: Subscription[] = []
     private animationFrameHandle: number
     private renderLoopActions: Record<string, { action: () => void }> = {}
@@ -133,7 +133,7 @@ export class Environment3D {
                 const group = dynamicContent3d.encapsulatingGroup
                 this.rootGroup.add(group)
                 this.frontLayer = dynamicContent3d
-                this.addSelectables(...dynamicContent3d.getSelectables())
+                this.setSelectables()
                 fitSceneToContent(this.scene, this.camera, this.controls)
                 this.fog.near = this.camera.position.z
                 this.fog.far = this.camera.position.z + 150
@@ -149,16 +149,17 @@ export class Environment3D {
         cancelAnimationFrame(this.animationFrameHandle)
     }
 
+    setFrontLayer(layer: Immutable<Dynamic3dContent>) {
+        this.frontLayer = layer
+        this.setSelectables()
+    }
+
     render() {
         this.applyRenderLoopActions()
         this.controls.update()
         this.renderers.forEach((renderer) => {
             renderer.render(this.scene, this.camera)
         })
-    }
-
-    addSelectables(...objects: SelectableObject3D[]) {
-        this.selectables = [...this.selectables, ...objects]
     }
 
     removeSelectables(...objects: SelectableObject3D[]) {
@@ -312,6 +313,17 @@ export class Environment3D {
         //             : undefined
         //     this.fitSceneToContent(entity)
         // }
+    }
+
+    private setSelectables() {
+        const bgdSelectables = (layer: Immutable<Dynamic3dContent>) =>
+            layer.parent
+                ? [layer.layerBackground, ...bgdSelectables(layer.parent)]
+                : [layer.layerBackground]
+        this.selectables = [
+            ...this.frontLayer.getSelectables(),
+            ...bgdSelectables(this.frontLayer),
+        ].filter((e) => e != undefined)
     }
 
     private animate() {
