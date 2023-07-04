@@ -31,7 +31,6 @@ interface RendererTrait {
 export interface ConfigurationEnv3D {
     antialias: boolean
     resolution: number
-    lights: boolean
 }
 export class Environment3D {
     public readonly configuration$: Immutable$<ConfigurationEnv3D>
@@ -214,9 +213,7 @@ export class Environment3D {
         })
         this.renderer.setSize(clientWidth, clientHeight)
         this.htmlElementContainer.appendChild(this.renderer.domElement)
-        if (configuration.lights) {
-            this.renderer.shadowMap.enabled = true
-        }
+
         this.renderer.setPixelRatio(
             window.devicePixelRatio * configuration.resolution,
         )

@@ -10,7 +10,6 @@ import { Immutable, Modules, HtmlTrait, Projects } from '@youwol/vsf-core'
 import { constants } from '../constants'
 import {
     defaultSelector,
-    plugSpot,
     SelectableTrait,
     Selector,
     SlotsTrait,
@@ -145,7 +144,6 @@ export class ModuleBaseObject3d<
         this.material = this.mesh.material as MeshStandardMaterial
         this.spot = moduleSpot(this)
         this.add(this.mesh)
-        plugSpot(this)
         this.selector = defaultSelector<TEntity>(this, {
             onSelected: () =>
                 this.entity.instance &&

@@ -104,18 +104,6 @@ export interface SpotTrait {
     environment3d: Immutable<Environment3D>
 }
 
-export function plugSpot(obj: SpotTrait & Object3D) {
-    obj.environment3d.ownSubscriptions(
-        obj.environment3d.configuration$.subscribe((conf) => {
-            obj.remove(obj.spot)
-            obj.mesh.castShadow = conf.lights
-            if (conf.lights) {
-                obj.add(obj.spot)
-            }
-        }),
-    )
-}
-
 export interface GrouperTraitObject3D<Entity = Macro | Layer | NestedModule> {
     grouperType: 'macro' | 'group' | 'nested'
     entity: Immutable<Entity>

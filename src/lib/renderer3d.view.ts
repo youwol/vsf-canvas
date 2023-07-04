@@ -8,7 +8,7 @@ import {
     Modules,
 } from '@youwol/vsf-core'
 import { ConfigurationEnv3D, Environment3D } from './environment3d'
-import { BehaviorSubject, combineLatest, from, of, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, from, of, ReplaySubject } from 'rxjs'
 import { delay, map, mergeMap, shareReplay, skip } from 'rxjs/operators'
 import { install } from '@youwol/cdn-client'
 import { setup } from '../auto-generated'
@@ -40,9 +40,8 @@ export class Renderer3DView {
     public readonly children: VirtualDOM[]
     public environment3D$: ReplaySubject<Environment3D>
     public readonly configuration$ = new BehaviorSubject({
-        antialias: false,
+        antialias: true,
         resolution: 1,
-        lights: false,
     })
     private environment3D: Environment3D
 
@@ -206,14 +205,12 @@ export class ConfigView implements VirtualDOM {
      */
     public readonly class = 'd-flex justify-content-left'
 
-    private readonly lights$: BehaviorSubject<boolean>
     private readonly antiAliasing$: BehaviorSubject<boolean>
 
     constructor(config$: BehaviorSubject<ConfigurationEnv3D>) {
         this.antiAliasing$ = new BehaviorSubject<boolean>(
             config$.value.antialias,
         )
-        this.lights$ = new BehaviorSubject<boolean>(config$.value.lights)
         const toggle = ({ faClass, obs }) => {
             return {
                 class: attr$(
@@ -230,15 +227,14 @@ export class ConfigView implements VirtualDOM {
         }
         this.children = [
             toggle({ faClass: 'fa-signature', obs: this.antiAliasing$ }),
-            toggle({ faClass: 'fa-lightbulb', obs: this.lights$ }),
         ]
-        combineLatest([this.antiAliasing$, this.lights$])
+        this.antiAliasing$
             .pipe(
                 // first emission is the original configuration
                 skip(1),
             )
-            .subscribe(([antialias, lights]) => {
-                config$.next({ ...config$.value, antialias, lights })
+            .subscribe((antialias) => {
+                config$.next({ ...config$.value, antialias })
             })
     }
 }
