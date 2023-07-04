@@ -40,7 +40,7 @@ export class Renderer3DView {
     public readonly children: VirtualDOM[]
     public environment3D$: ReplaySubject<Environment3D>
     public readonly configuration$ = new BehaviorSubject({
-        antialias: false,
+        antialias: true,
         resolution: 1,
     })
     private environment3D: Environment3D
