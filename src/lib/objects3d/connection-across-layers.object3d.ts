@@ -68,6 +68,7 @@ export class ConnectionAcrossLayersObject3d
             end,
             this.connection,
             this.parentLayer.project.canvasViews,
+            this.parentLayer.environment3d,
         )
         this.add(...objects)
     }

@@ -19,6 +19,8 @@ import { CSS3DObject } from '../renderers'
 import { IntraLayerConnection } from '../models'
 import { Dynamic3dContent } from '../dynamic-content'
 import { transformPosition } from './utils'
+import { takeUntil } from 'rxjs/operators'
+import { Environment3D } from '../environment3d'
 
 export class ConnectionObject3d
     extends Group
@@ -61,6 +63,7 @@ export class ConnectionObject3d
             end,
             this.connection,
             this.parentLayer.project.canvasViews,
+            this.parentLayer.environment3d,
         )
         this.add(...objects)
         // this.selector = new Selector<IntraLayerConnection>({
@@ -106,6 +109,7 @@ export function connection(
     end: Vector3,
     connection: Immutable<IntraLayerConnection>,
     canvasView,
+    environment: Immutable<Environment3D>,
 ) {
     const linewidth = 2
     const dash = {
@@ -179,14 +183,15 @@ export function connection(
             connection: connection,
         })
     }
-
     connection.instance &&
-        connection.instance.status$.subscribe((status) => {
-            const { transparent, opacity } = line.material
-            line.material = materials[status]
-            line.material.transparent = transparent
-            line.material.opacity = opacity
-        })
+        connection.instance.status$
+            .pipe(takeUntil(environment.projectSwitch$))
+            .subscribe((status) => {
+                const { transparent, opacity } = line.material
+                line.material = materials[status]
+                line.material.transparent = transparent
+                line.material.opacity = opacity
+            })
     return [line, adaptor, arrowHelper, canvas].filter(
         (obj) => obj != undefined,
     )
