@@ -15,13 +15,13 @@ import { Projects, Immutable, Immutable$ } from '@youwol/vsf-core'
 import { CSS3DRenderer } from './renderers'
 import * as THREE from 'three'
 import { fitSceneToContent, prepareWorkflowAndInstancePool } from './utils'
-import { ReplaySubject, Subscription } from 'rxjs'
+import { ReplaySubject, Subject, Subscription } from 'rxjs'
 import { Module, SelectableObject3D } from './models'
 import { Dynamic3dContent } from './dynamic-content'
 import { focusOnGroupAnimation } from './objects3d/utils'
 import { MouseControls } from './controls/mouse.controls'
 import { StateTrait } from './renderer3d.view'
-import { mergeMap } from 'rxjs/operators'
+import { mergeMap, tap } from 'rxjs/operators'
 
 interface RendererTrait {
     setSize: (w: number, h: number) => void
@@ -35,6 +35,7 @@ export interface ConfigurationEnv3D {
 export class Environment3D {
     public readonly configuration$: Immutable$<ConfigurationEnv3D>
     public readonly project$: Immutable$<Projects.ProjectState>
+    public readonly projectSwitch$ = new Subject<boolean>()
     public readonly state: Immutable<StateTrait>
     public readonly workflowId: Immutable<string>
     public readonly htmlElementContainer: HTMLDivElement
@@ -111,6 +112,9 @@ export class Environment3D {
 
         this.project$
             .pipe(
+                tap(() => {
+                    this.projectSwitch$.next(true)
+                }),
                 mergeMap((project) => {
                     return prepareWorkflowAndInstancePool(
                         project,
