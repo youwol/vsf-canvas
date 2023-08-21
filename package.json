@@ -49,7 +49,7 @@
     "dependencies": {
         "@youwol/cdn-client": "^2.0.4",
         "@youwol/flux-view": "^1.0.3",
-        "@youwol/vsf-core": "^0.1.2",
+        "@youwol/vsf-core": "^0.2.0",
         "rxjs": "^6.5.5",
         "three": "^0.152.0",
         "@youwol/fv-tabs": "^0.2.1",
@@ -61,7 +61,7 @@
         "cdnDependencies": {
             "@youwol/cdn-client": "^2.0.4",
             "@youwol/flux-view": "^1.0.3",
-            "@youwol/vsf-core": "^0.1.2",
+            "@youwol/vsf-core": "^0.2.0",
             "rxjs": "^6.5.5",
             "three": "^0.152.0"
         }
