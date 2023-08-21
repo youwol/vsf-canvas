@@ -1,8 +1,8 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/cdn-client": "^2.0.4",
-        "@youwol/flux-view": "^1.0.3",
+        "@youwol/cdn-client": "^2.0.6",
+        "@youwol/flux-view": "^1.1.1",
         "@youwol/vsf-core": "^0.2.0",
         "rxjs": "^6.5.5",
         "three": "^0.152.0",
@@ -165,7 +165,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-canvas#0.2.0-wip~dist/@youwol/vsf-canvas/${entry.name}.js`
+            `@youwol/vsf-canvas#0.2.0~dist/@youwol/vsf-canvas/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),

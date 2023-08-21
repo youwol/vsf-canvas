@@ -1132,7 +1132,7 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@youwol/cdn-client@^2.0.4", "@youwol/cdn-client@^2.0.6":
+"@youwol/cdn-client@^2.0.6":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-2.0.6.tgz#9703e0ac6a4bb7adbc780c259ce70bc4e34f6ba0"
   integrity sha512-RYhm/1wUiyZ+IQLh7DuN2dxZ6Yu10AZQMuYpgDOU+Lkfj17fWrmXZdluzJGFFYoeMqjCQuTmTYES+Zc03hu4PQ==
@@ -1156,7 +1156,7 @@
     eslint-plugin-tsdoc "^0.2.17"
     eslint-plugin-unused-imports "^2.0.0"
 
-"@youwol/flux-view@^1.0.3", "@youwol/flux-view@^1.1.0":
+"@youwol/flux-view@^1.0.3", "@youwol/flux-view@^1.1.0", "@youwol/flux-view@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@youwol/flux-view/-/flux-view-1.1.1.tgz#66c41672b913b99ace5ce6e70d05ad6a9daea579"
   integrity sha512-/EWXYnRRpRI5BMu9IRcwqPJmlf9MZQMS6FaRp3yCzr9RAxhuAbvSZUDN18OJGg3hUvUtRTmQOUWtfQaVypH8Tg==
