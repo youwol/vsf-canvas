@@ -1,4 +1,4 @@
-import { Immutable, Projects } from '@youwol/vsf-core'
+import { Immutable, Deployers } from '@youwol/vsf-core'
 import { Layer } from '../models'
 import { Dynamic3dContent } from '../dynamic-content'
 import { BehaviorSubject } from 'rxjs'
@@ -41,7 +41,7 @@ export function groupObject3d({
         },
         modules: [],
     }
-    const pool = new Projects.InstancePool({
+    const pool = new Deployers.InstancePool({
         modules: parentLayer.project.instancePool.modules.filter((m) =>
             entity.model.moduleIds.includes(m.uid),
         ),

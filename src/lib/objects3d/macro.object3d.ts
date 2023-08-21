@@ -1,4 +1,4 @@
-import { Immutable, Projects } from '@youwol/vsf-core'
+import { Immutable, Deployers } from '@youwol/vsf-core'
 import { Macro } from '../models'
 import { Dynamic3dContent } from '../dynamic-content'
 import { ModuleBaseObject3d } from './module-base.object3d'
@@ -16,7 +16,7 @@ export function macroObject3d({
         onExpand: () => parentLayer.expandMacro(object),
         instancePool$,
     })
-    const workerAction = Projects.Workers.implementWorkerEnvironmentTrait(
+    const workerAction = Deployers.implementWorkerEnvironmentTrait(
         instancePool$.value,
     )
         ? new InspectWorkerAction({

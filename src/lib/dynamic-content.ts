@@ -16,7 +16,15 @@ import {
     SelectableObject3D,
 } from './models'
 import { Environment3D } from './environment3d'
-import { Immutable, Immutables, Projects } from '@youwol/vsf-core'
+import {
+    Immutable,
+    Immutables,
+    Projects,
+    Deployers,
+    Workflows,
+    Connections,
+    Modules,
+} from '@youwol/vsf-core'
 import {
     collapseGroupAnimation,
     expandGroupAnimation,
@@ -36,8 +44,8 @@ type ExpandParams<TParams> = {
         | ModuleBaseObject3d<NestedModule>
         | ModuleBaseObject3d<Macro>
         | ModuleBaseObject3d<Layer>
-    instancePool: Immutable<Projects.InstancePool>
-    workflow: Immutable<Projects.WorkflowModel>
+    instancePool: Immutable<Deployers.InstancePool>
+    workflow: Immutable<Workflows.WorkflowModel>
     layerId?: string
     connectionsGenerator: (
         parent,
@@ -54,9 +62,9 @@ export class Dynamic3dContent {
     public readonly environment3d: Environment3D
     public readonly project: Immutable<Projects.ProjectState>
     public readonly layerOrganizer: Immutable<LayerOrganizer>
-    public readonly instancePool: Immutable<Projects.InstancePool>
+    public readonly instancePool: Immutable<Deployers.InstancePool>
     public readonly layerId: string
-    public readonly workflow: Immutable<Projects.WorkflowModel>
+    public readonly workflow: Immutable<Workflows.WorkflowModel>
     public readonly modules: Immutables<ModuleBaseObject3d<Module>>
     public readonly groups: Immutables<ModuleBaseObject3d<Layer>>
     public readonly macros: Immutables<ModuleBaseObject3d<Macro>>
@@ -74,9 +82,9 @@ export class Dynamic3dContent {
     constructor(params: {
         isRunning: boolean
         project: Immutable<Projects.ProjectState>
-        instancePool: Immutable<Projects.InstancePool>
+        instancePool: Immutable<Deployers.InstancePool>
         layerId: string
-        workflow: Immutable<Projects.WorkflowModel>
+        workflow: Immutable<Workflows.WorkflowModel>
         environment3d: Environment3D
         parent?: Dynamic3dContent
         depthIndex: number
@@ -173,7 +181,7 @@ export class Dynamic3dContent {
     }
 
     getConnectedSlot(
-        connection: Immutable<Projects.ConnectionModel>,
+        connection: Immutable<Connections.ConnectionModel>,
         toExtremity: 'start' | 'end',
     ): Object3D {
         const other = toExtremity == 'start' ? 'end' : 'start'
@@ -372,8 +380,8 @@ export class Dynamic3dContent {
 
 export class LayerOrganizer {
     public readonly project: Immutable<Projects.ProjectState>
-    public readonly instancePool: Immutable<Projects.InstancePool>
-    public readonly workflow: Immutable<Projects.WorkflowModel>
+    public readonly instancePool: Immutable<Deployers.InstancePool>
+    public readonly workflow: Immutable<Workflows.WorkflowModel>
     public readonly parent: Immutable<LayerOrganizer>
     public readonly layerId: string
     public readonly intraConnections: IntraLayerConnection[]
@@ -388,9 +396,9 @@ export class LayerOrganizer {
     public readonly entitiesId: Immutables<string>
 
     constructor(params: {
-        instancePool: Immutable<Projects.InstancePool>
+        instancePool: Immutable<Deployers.InstancePool>
         project: Immutable<Projects.ProjectState>
-        workflow: Immutable<Projects.WorkflowModel>
+        workflow: Immutable<Workflows.WorkflowModel>
         parent?: Immutable<LayerOrganizer>
         layerId: string
     }) {
@@ -402,7 +410,7 @@ export class LayerOrganizer {
         const moduleModels = this.moduleIds.map((uid) => {
             return this.workflow.modules.find((m) => m.uid == uid)
         })
-        const isMacro = (model: Projects.ModuleModel) => {
+        const isMacro = (model: Modules.ModuleModel) => {
             const env = this.project.environment
             const macroTb = env.macrosToolbox
             return macroTb.modules.find(

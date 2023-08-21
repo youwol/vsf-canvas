@@ -11,7 +11,7 @@ import {
 import { FontLoader } from '../loaders/font-loaders'
 import { FontGentilis } from '../fonts/gentilis_bold.typeface'
 import { createTextWithMaxWidth } from './utils'
-import { Projects } from '@youwol/vsf-core'
+import { ToolBox, Projects } from '@youwol/vsf-core'
 
 const fontLoader = new FontLoader(undefined)
 const font = fontLoader.parse(FontGentilis)
@@ -28,7 +28,7 @@ export class HeaderObject3d extends Group {
     constructor(params: {
         id: string
         type: string
-        toolbox: Projects.ToolBox
+        toolbox: ToolBox
         padding: number
         width: number
         height: number
