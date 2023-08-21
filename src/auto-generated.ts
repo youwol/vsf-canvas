@@ -119,7 +119,7 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-canvas',
         assetId:'QHlvdXdvbC92c2YtY2FudmFz',
-    version:'0.2.0-wip',
+    version:'0.2.0',
     shortDescription:"3D rendering of vs-flow's workflow.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-canvas&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-canvas',
