@@ -5,7 +5,7 @@ import {
     layeringLongestPath,
     sugiyama,
 } from 'd3-dag'
-import { Projects, Modules, Immutable } from '@youwol/vsf-core'
+import { Projects, Connections, Immutable, Workflows } from '@youwol/vsf-core'
 import { Vector3 } from 'three'
 import { constants } from './constants'
 
@@ -13,12 +13,12 @@ const expansionFactor = constants.dagExpansionFactor
 
 export function renderDag(
     project: Immutable<Projects.ProjectState>,
-    layer: Immutable<Projects.Layer>,
+    layer: Immutable<Workflows.Layer>,
 ) {
     const layerModules = layer.moduleIds
     const allIds = [...layerModules, ...layer.children.map((l) => l.uid)]
     function getStartingEntityId(
-        connection: Immutable<Modules.ConnectionTrait>,
+        connection: Immutable<Connections.ConnectionTrait>,
     ) {
         if (layerModules.includes(connection.start.moduleId)) {
             return connection.start.moduleId

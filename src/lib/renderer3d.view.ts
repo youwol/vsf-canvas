@@ -5,7 +5,9 @@ import {
     Immutables,
     HtmlTrait,
     Projects,
+    Deployers,
     Modules,
+    Connections,
 } from '@youwol/vsf-core'
 import { ConfigurationEnv3D, Environment3D } from './environment3d'
 import { BehaviorSubject, from, of, ReplaySubject } from 'rxjs'
@@ -16,7 +18,7 @@ import Stats from 'stats.js'
 
 type TStats = typeof Stats
 
-export type Selectable = Modules.ImplementationTrait | Modules.Connection
+export type Selectable = Modules.ImplementationTrait | Connections.Connection
 
 export interface StateTrait {
     select(entities: Immutables<Selectable>)
@@ -26,7 +28,7 @@ export interface StateTrait {
     displayModuleJournal(module: Immutable<Modules.ImplementationTrait>)
     displayModuleDocumentation(module: Immutable<Modules.ImplementationTrait>)
     displayWorkerEnvironment(
-        workerEnv: Immutable<Projects.Workers.WorkerEnvironmentTrait>,
+        workerEnv: Immutable<Deployers.WorkerEnvironmentTrait>,
     )
 }
 

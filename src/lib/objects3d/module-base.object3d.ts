@@ -6,7 +6,7 @@ import {
     MeshStandardMaterial,
     Vector3,
 } from 'three'
-import { Immutable, Modules, HtmlTrait, Projects } from '@youwol/vsf-core'
+import { Immutable, Modules, HtmlTrait, ToolBox } from '@youwol/vsf-core'
 import { constants } from '../constants'
 import {
     defaultSelector,
@@ -59,7 +59,7 @@ export class ModuleBaseObject3d<
         inputSlots: { [k: string]: Modules.SlotTrait }
         outputSlots: { [k: string]: Modules.SlotTrait }
         instancePool$?
-        toolbox: Projects.ToolBox
+        toolbox: ToolBox
         title: string
         subTitle: string
     }) {

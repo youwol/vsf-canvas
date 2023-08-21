@@ -12,7 +12,13 @@ import {
     Vector3,
     VectorKeyframeTrack,
 } from 'three'
-import { Immutable, Projects, Modules } from '@youwol/vsf-core'
+import {
+    Immutable,
+    Modules,
+    Workflows,
+    Deployers,
+    Connections,
+} from '@youwol/vsf-core'
 import { InterLayerConnection, Macro } from '../models'
 import { Environment3D } from '../environment3d'
 import * as THREE from 'three'
@@ -137,7 +143,7 @@ export function nestedModuleInterConnections(
     const modules = instancePool.modules.map(
         (
             m: Modules.ImplementationTrait,
-        ): Projects.ModuleModel & { inputSlotId; outputSlotId } => {
+        ): Modules.ModuleModel & { inputSlotId; outputSlotId } => {
             return {
                 uid: m.uid,
                 typeId: m.factory['typeId'],
@@ -165,7 +171,7 @@ export function nestedModuleInterConnections(
             toolboxVersion: nestedModule.toolboxVersion,
             modules: modules,
             connections: [],
-            rootLayer: new Projects.Layer({
+            rootLayer: new Workflows.Layer({
                 uid: `layer_${nestedModule.uid}`,
                 moduleIds: modules.map((m) => m.uid),
             }),
@@ -185,9 +191,9 @@ export function groupInterConnections(
     parentLayer: Immutable<Dynamic3dContent>,
     childLayer: Immutable<Dynamic3dContent>,
     arg: {
-        layer: Immutable<Projects.Layer>
-        workflow: Immutable<Projects.WorkflowModel>
-        instancePool: Immutable<Projects.InstancePool>
+        layer: Immutable<Workflows.Layer>
+        workflow: Immutable<Workflows.WorkflowModel>
+        instancePool: Immutable<Deployers.InstancePool>
     },
 ) {
     const { downStreamConnections, upStreamConnections } =
@@ -196,7 +202,7 @@ export function groupInterConnections(
         arg.workflow.connections.find((c) => c.uid == eqConnection.uid)
 
     const toConnectionModel = (
-        connection: Immutable<Projects.ConnectionModel>,
+        connection: Immutable<Connections.ConnectionModel>,
     ) => {
         const p2c = upStreamConnections.find((c) => c.uid == connection.uid)
         return {
@@ -219,7 +225,7 @@ export function groupInterConnections(
     }
     return [...upStreamConnections, ...downStreamConnections]
         .map(findReal)
-        .map((connection: Immutable<Projects.ConnectionModel>) => {
+        .map((connection: Immutable<Connections.ConnectionModel>) => {
             const model = toConnectionModel(connection)
             return new ConnectionAcrossLayersObject3d({
                 parentLayer,
@@ -397,7 +403,7 @@ export function putBulletsInLine({
     parentGroup: Object3D
     width: number
     bulletRadius: number
-    pool: Immutable<Projects.InstancePool>
+    pool: Immutable<Deployers.InstancePool>
     material: Material
 }) {
     const bulletsCount = pool.modules.length

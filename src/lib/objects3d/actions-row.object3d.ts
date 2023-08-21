@@ -5,7 +5,7 @@ import { Observable } from 'rxjs'
 import {
     Immutable,
     Immutable$,
-    Projects,
+    Deployers,
     Modules,
     HtmlTrait,
 } from '@youwol/vsf-core'
@@ -54,7 +54,7 @@ export class ExpandAction implements VirtualDOM {
         instancePool$,
     }: {
         onExpand
-        instancePool$: Immutable$<Projects.InstancePool>
+        instancePool$: Immutable$<Deployers.InstancePool>
     }) {
         this.class = attr$(
             instancePool$,

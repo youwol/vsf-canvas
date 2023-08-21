@@ -1,9 +1,9 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/cdn-client": "^2.0.4",
-        "@youwol/flux-view": "^1.0.3",
-        "@youwol/vsf-core": "^0.1.2",
+        "@youwol/cdn-client": "^2.0.6",
+        "@youwol/flux-view": "^1.1.1",
+        "@youwol/vsf-core": "^0.2.0",
         "rxjs": "^6.5.5",
         "three": "^0.152.0",
         "@youwol/fv-tabs": "^0.2.1",
@@ -28,7 +28,7 @@ const externals = {
     "@youwol/vsf-core": {
         "commonjs": "@youwol/vsf-core",
         "commonjs2": "@youwol/vsf-core",
-        "root": "@youwol/vsf-core_APIv01"
+        "root": "@youwol/vsf-core_APIv02"
     },
     "rxjs": {
         "commonjs": "rxjs",
@@ -74,7 +74,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/flux-view"
     },
     "@youwol/vsf-core": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/vsf-core"
     },
     "rxjs": {
@@ -119,13 +119,13 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-canvas',
         assetId:'QHlvdXdvbC92c2YtY2FudmFz',
-    version:'0.1.2-wip',
+    version:'0.2.0',
     shortDescription:"3D rendering of vs-flow's workflow.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-canvas&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-canvas',
     sourceGithub:'https://github.com/youwol/vsf-canvas',
     userGuide:'https://l.youwol.com/doc/@youwol/vsf-canvas',
-    apiVersion:'01',
+    apiVersion:'02',
     runTimeDependencies,
     externals,
     exportedSymbols,
@@ -150,7 +150,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/vsf-canvas_APIv01`]
+            return window[`@youwol/vsf-canvas_APIv02`]
         })
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
@@ -165,7 +165,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-canvas#0.1.2-wip~dist/@youwol/vsf-canvas/${entry.name}.js`
+            `@youwol/vsf-canvas#0.2.0~dist/@youwol/vsf-canvas/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
@@ -176,7 +176,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/vsf-canvas/${entry.name}_APIv01`]
+            return window[`@youwol/vsf-canvas/${entry.name}_APIv02`]
         })
     },
     getCdnDependencies(name?: string){

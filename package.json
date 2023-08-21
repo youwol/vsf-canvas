@@ -1,7 +1,7 @@
 {
     "name": "@youwol/vsf-canvas",
     "description": "3D rendering of vs-flow's workflow.",
-    "version": "0.1.2-wip",
+    "version": "0.2.0",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/vsf-canvas#README.md",
     "main": "dist/@youwol/vsf-canvas.js",
@@ -47,9 +47,9 @@
         ]
     },
     "dependencies": {
-        "@youwol/cdn-client": "^2.0.4",
-        "@youwol/flux-view": "^1.0.3",
-        "@youwol/vsf-core": "^0.1.2",
+        "@youwol/cdn-client": "^2.0.6",
+        "@youwol/flux-view": "^1.1.1",
+        "@youwol/vsf-core": "^0.2.0",
         "rxjs": "^6.5.5",
         "three": "^0.152.0",
         "@youwol/fv-tabs": "^0.2.1",
@@ -59,9 +59,9 @@
     },
     "youwol": {
         "cdnDependencies": {
-            "@youwol/cdn-client": "^2.0.4",
-            "@youwol/flux-view": "^1.0.3",
-            "@youwol/vsf-core": "^0.1.2",
+            "@youwol/cdn-client": "^2.0.6",
+            "@youwol/flux-view": "^1.1.1",
+            "@youwol/vsf-core": "^0.2.0",
             "rxjs": "^6.5.5",
             "three": "^0.152.0"
         }

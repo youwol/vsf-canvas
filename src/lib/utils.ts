@@ -1,7 +1,7 @@
 import { PerspectiveCamera, Group, Box3, Vector3, Object3D } from 'three'
 import { MouseControls } from './controls/mouse.controls'
 
-import { Projects, Immutable } from '@youwol/vsf-core'
+import { Projects, Immutable, Workflows, Deployers } from '@youwol/vsf-core'
 import { from, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 
@@ -83,7 +83,7 @@ async function createSupportingMacroInstancePool({
     workflow,
     environment,
 }: {
-    workflow: Immutable<Projects.WorkflowModel>
+    workflow: Immutable<Workflows.WorkflowModel>
     environment: Immutable<Projects.Environment>
 }) {
     await environment.installDependencies({ modules: workflow.modules })
@@ -97,7 +97,7 @@ async function createSupportingMacroInstancePool({
             })
         }),
     )
-    return new Projects.InstancePool({
+    return new Deployers.InstancePool({
         modules: instances,
         parentUid: workflow.uid,
     })
