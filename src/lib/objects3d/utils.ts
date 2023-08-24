@@ -18,6 +18,7 @@ import {
     Workflows,
     Deployers,
     Connections,
+    Macros,
 } from '@youwol/vsf-core'
 import { InterLayerConnection, Macro } from '../models'
 import { Environment3D } from '../environment3d'
@@ -127,11 +128,7 @@ export function nestedModuleInterConnections(
     child: Immutable<Dynamic3dContent>,
     nestedModule: Immutable<Modules.ImplementationTrait>,
 ) {
-    if (
-        !['switchMapMacro', 'mergeMapMacro', 'concatMapMacro'].includes(
-            nestedModule.factory.declaration.typeId,
-        )
-    ) {
+    if (!(nestedModule.state instanceof Macros.InnerObservablesPool)) {
         // the general case of nested module is not handled for now as we don't know within nestedModule.instancePool
         // which modules serve as IO
         return []
