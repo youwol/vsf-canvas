@@ -12,14 +12,7 @@ import {
     Vector3,
     VectorKeyframeTrack,
 } from 'three'
-import {
-    Immutable,
-    Modules,
-    Workflows,
-    Deployers,
-    Connections,
-    Macros,
-} from '@youwol/vsf-core'
+import { Immutable, Workflows, Deployers, Connections } from '@youwol/vsf-core'
 import { InterLayerConnection, Macro } from '../models'
 import { Environment3D } from '../environment3d'
 import * as THREE from 'three'
@@ -32,7 +25,7 @@ import { LayerBackgroundObject3d } from './layer-background.object3d'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { take } from 'rxjs/operators'
 
-function macroSlotStatus(
+export function macroSlotStatus(
     macro: Immutable<Macro>,
     index: number,
     type: 'parent->child' | 'child->parent',
@@ -73,18 +66,12 @@ export function macroInterConnections(
         slotInside: Immutable<{
             slotId: number | string
             moduleId: string
-            // The attribute 'fakeParentSlotId' is a workaround for nested module case,
-            // see `nestedModuleInterConnections
-            fakeParentSlotId?: number
         }>,
         type: 'parent->child' | 'child->parent',
     ) => {
         const p2c = type == 'parent->child'
         const slotMacro = {
-            slotId:
-                slotInside.fakeParentSlotId === undefined
-                    ? i
-                    : slotInside.fakeParentSlotId,
+            slotId: i,
             moduleId: macro.uid,
         }
         const finder = parentLayer.layerOrganizer
@@ -121,67 +108,6 @@ export function macroInterConnections(
     return [...c0, ...c1].map((d) => {
         return new ConnectionAcrossLayersObject3d(d)
     })
-}
-
-export function nestedModuleInterConnections(
-    parent: Immutable<Dynamic3dContent>,
-    child: Immutable<Dynamic3dContent>,
-    nestedModule: Immutable<Modules.ImplementationTrait>,
-) {
-    if (!(nestedModule.state instanceof Macros.InnerObservablesPool)) {
-        // the general case of nested module is not handled for now as we don't know within nestedModule.instancePool
-        // which modules serve as IO
-        return []
-    }
-    const instancePool = nestedModule.instancePool$.value
-    // Below a 'fake' MacroModel is constructed, each instance of nestedModule.instancePool serves as both input &
-    // output.
-    // The attribute 'fakeParentSlotId' is a workaround to handle the '*MapMacro' modules connections.
-    const modules = instancePool.modules.map(
-        (
-            m: Modules.ImplementationTrait,
-        ): Modules.ModuleModel & { inputSlotId; outputSlotId } => {
-            return {
-                uid: m.uid,
-                typeId: m.factory['typeId'],
-                toolboxId: m.toolboxId,
-                toolboxVersion: m.toolboxVersion,
-                configuration: { uid: m.uid },
-                inputSlotId: Object.values(m.inputSlots)[0]?.slotId,
-                outputSlotId: Object.values(m.outputSlots)[0].slotId,
-            }
-        },
-    )
-    const macroModule = instancePool.modules[0]
-    const hasInput = Object.keys(macroModule.inputSlots).length > 0
-    const maybeInputs = instancePool.modules.map((m) => ({
-        slotId: 0,
-        moduleId: m.uid,
-        fakeParentSlotId: 0,
-    }))
-    const macro: Macro = {
-        uid: nestedModule.uid,
-        model: {
-            uid: nestedModule.uid,
-            typeId: nestedModule.factory.declaration.typeId,
-            toolboxId: nestedModule.toolboxId,
-            toolboxVersion: nestedModule.toolboxVersion,
-            modules: modules,
-            connections: [],
-            rootLayer: new Workflows.Layer({
-                uid: `layer_${nestedModule.uid}`,
-                moduleIds: modules.map((m) => m.uid),
-            }),
-            inputs: hasInput ? maybeInputs : [],
-            outputs: modules.map((m) => ({
-                slotId: 0,
-                moduleId: m.uid,
-                fakeParentSlotId: 0,
-            })),
-        },
-        instance: nestedModule,
-    }
-    return macroInterConnections(parent, child, macro)
 }
 
 export function groupInterConnections(

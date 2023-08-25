@@ -30,9 +30,9 @@ import {
     expandGroupAnimation,
     groupInterConnections,
     macroInterConnections,
-    nestedModuleInterConnections,
     setOpacity,
 } from './objects3d/utils'
+import { nestedInterConnections } from './objects3d/nested-inter-connections'
 import { LayerBackgroundObject3d } from './objects3d/layer-background.object3d'
 import { ConnectionAcrossLayersObject3d } from './objects3d/connection-across-layers.object3d'
 import { BehaviorSubject } from 'rxjs'
@@ -258,7 +258,7 @@ export class Dynamic3dContent {
             from,
             instancePool,
             workflow,
-            connectionsGenerator: nestedModuleInterConnections,
+            connectionsGenerator: nestedInterConnections,
             args: from.entity.instance,
         })
     }
@@ -527,17 +527,20 @@ export class LayerOrganizer {
         slot: { moduleId: string; slotId: string | number },
         fromExtremity: 'end' | 'start',
     ) {
+        const target =
+            typeof slot.slotId == 'number'
+                ? slot
+                : getSlot(slot, fromExtremity, [
+                      ...this.modules,
+                      ...this.macros,
+                      ...this.nestedModules,
+                  ])
         const connection = this.intraConnections.find(
             (c) =>
-                c.model[fromExtremity].slotId == slot.slotId &&
-                c.model[fromExtremity].moduleId == slot.moduleId,
+                c.model[fromExtremity].slotId == target.slotId &&
+                c.model[fromExtremity].moduleId == target.moduleId,
         )
         if (!connection) {
-            console.error('Can not find connection', {
-                target: slot,
-                fromExtremity,
-                layerOrganizer: this,
-            })
             return undefined
         }
 
@@ -582,12 +585,33 @@ export class LayerOrganizer {
                 slot,
             })
         }
+        if (!this.instancePool.connectionsHint) {
+            console.error(
+                'No connections hint available to determine connection to parent',
+                {
+                    fromExtremity,
+                    slot,
+                },
+            )
+            throw Error('Can not determine relative of given slot')
+        }
+        if (!this.instancePool.connectionsHint[slot.moduleId]) {
+            console.error(
+                `No connections hint available for target module '${slot.moduleId}' to determine connection to parent`,
+                {
+                    fromExtremity,
+                    slot,
+                },
+            )
+            throw Error('Can not determine relative of given slot')
+        }
+        const hint = this.instancePool.connectionsHint[slot.moduleId]
         // here we have either a NestedModule or a MacroModule
         // In case of nested Module we need one nested module with one input (practical case of *MapMacro)
         return organizer.findRelative(
             {
-                // 0 is only OK for Nested *MapMacro
-                slotId: 0,
+                slotId:
+                    fromExtremity == 'end' ? hint.parent.from : hint.parent.to,
                 moduleId: parentModule.uid,
             },
             fromExtremity,
@@ -650,4 +674,23 @@ export class LayerOrganizer {
             upStreamConnections,
         }
     }
+}
+
+function getSlot(
+    slot: { slotId: number | string; moduleId: string },
+    fromExtremity: 'end' | 'start',
+    modules: Immutables<Module | Macro | NestedModule>,
+) {
+    if (typeof slot.slotId == 'number') {
+        return slot
+    }
+    const impl = modules.find((m) => m.instance.uid == slot.moduleId)
+    const slots =
+        fromExtremity == 'end'
+            ? impl.instance.inputSlots
+            : impl.instance.outputSlots
+    const t = Object.entries(slots)
+        .map(([k, _], i) => [k, i])
+        .find(([k, _]) => k == slot.slotId)
+    return { moduleId: slot.moduleId, slotId: t[1] }
 }
