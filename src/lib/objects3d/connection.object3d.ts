@@ -132,6 +132,10 @@ export function connection(
             linewidth,
             ...dash,
         }),
+        disconnected: new LineBasicMaterial({
+            color: 0xcccccc,
+            linewidth,
+        }),
     }
 
     const l = start.distanceTo(end)
