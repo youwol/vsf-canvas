@@ -13,6 +13,7 @@ export function nestedInterConnections(
     const instancePool = nestedModule.instancePool$.value
     if (!instancePool.connectionsHint) {
         // We can no draw connections if no connections hints
+        console.warn('No connections hints available')
         return []
     }
     return instancePool.modules
