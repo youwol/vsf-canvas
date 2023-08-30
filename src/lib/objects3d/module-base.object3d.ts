@@ -4,9 +4,15 @@ import {
     Mesh,
     MeshPhongMaterial,
     MeshStandardMaterial,
-    Vector3,
 } from 'three'
-import { Immutable, Modules, HtmlTrait, ToolBox } from '@youwol/vsf-core'
+import {
+    Immutable,
+    Modules,
+    HtmlTrait,
+    ToolBox,
+    Deployers,
+    Immutable$,
+} from '@youwol/vsf-core'
 import { constants } from '../constants'
 import {
     defaultSelector,
@@ -21,7 +27,7 @@ import { moduleSpot, putBulletsInLine, whiten } from './utils'
 import { MeshesFactory } from './meshes.factory'
 import { HeaderObject3d } from './header.object3d'
 import { ConnectivesObject3d } from './connectives.object3d'
-import { Dynamic3dContent } from '../dynamic-content'
+import { Dynamic3dContent, PositionsStore } from '../dynamic-content'
 import {
     ActionsRowObject3d,
     DisplayDocumentationAction,
@@ -54,11 +60,11 @@ export class ModuleBaseObject3d<
     constructor(params: {
         parentLayer: Immutable<Dynamic3dContent>
         entity: Immutable<TEntity>
-        entitiesPositions?: { [k: string]: Vector3 }
+        entitiesPositions: PositionsStore
         customActions?: VirtualDOM[]
         inputSlots: { [k: string]: Modules.SlotTrait }
         outputSlots: { [k: string]: Modules.SlotTrait }
-        instancePool$?
+        instancePool$?: Immutable$<Deployers.DeployerTrait>
         toolbox: ToolBox
         title: string
         subTitle: string
@@ -67,8 +73,7 @@ export class ModuleBaseObject3d<
         Object.assign(this, params)
         this.environment3d = this.parentLayer.environment3d
         this.name = this.entity.uid
-        const entitiesPosition =
-            params.entitiesPositions || this.parentLayer.entitiesPosition
+        const entitiesPosition = params.entitiesPositions
         this.name = this.entity.uid
         const position = entitiesPosition[this.entity.uid]
         this.position.set(position.x, position.y, position.z)

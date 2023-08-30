@@ -17,8 +17,8 @@ import { SelectableTrait, Selector } from './traits'
 import { render } from '@youwol/flux-view'
 import { CSS3DObject } from '../renderers'
 import { IntraLayerConnection } from '../models'
-import { Dynamic3dContent } from '../dynamic-content'
-import { transformPosition } from './utils'
+import { Dynamic3dContent, ModulesStore } from '../dynamic-content'
+import { getConnectedSlot, transformPosition } from './utils'
 import { takeUntil } from 'rxjs/operators'
 import { Environment3D } from '../environment3d'
 
@@ -34,11 +34,13 @@ export class ConnectionObject3d
     constructor(params: {
         parentLayer: Immutable<Dynamic3dContent>
         connection: Immutable<IntraLayerConnection>
+        modulesStore: ModulesStore
     }) {
         super()
         Object.assign(this, params)
         this.name = this.connection.uid
-        const startMesh = this.parentLayer.getConnectedSlot(
+        const startMesh = getConnectedSlot(
+            params.modulesStore,
             this.connection.model,
             'end',
         )
@@ -46,7 +48,8 @@ export class ConnectionObject3d
             startMesh,
             this.parentLayer.encapsulatingGroup,
         )
-        const endMesh = this.parentLayer.getConnectedSlot(
+        const endMesh = getConnectedSlot(
+            params.modulesStore,
             this.connection.model,
             'start',
         )

@@ -319,8 +319,8 @@ export class Environment3D {
     private setSelectables() {
         const bgdSelectables = (layer: Immutable<Dynamic3dContent>) =>
             layer.parent
-                ? [layer.layerBackground, ...bgdSelectables(layer.parent)]
-                : [layer.layerBackground]
+                ? [layer.state.layerBackground, ...bgdSelectables(layer.parent)]
+                : [layer.state.layerBackground]
         this.selectables = [
             ...this.frontLayer.getSelectables(),
             ...bgdSelectables(this.frontLayer),
