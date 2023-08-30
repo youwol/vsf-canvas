@@ -5,7 +5,7 @@ import {
     macroObject3d,
     nestedObject3d,
 } from './objects3d'
-import { Color, Group, Mesh, Object3D, Vector3 } from 'three'
+import { Color, Group, Vector3 } from 'three'
 import { computeCoordinates } from './dag'
 import {
     NestedModule,
@@ -19,10 +19,10 @@ import { Environment3D } from './environment3d'
 import {
     Immutable,
     Immutables,
+    Configurations,
     Projects,
     Deployers,
     Workflows,
-    Connections,
     Modules,
 } from '@youwol/vsf-core'
 import {
@@ -35,8 +35,9 @@ import {
 import { nestedInterConnections } from './objects3d/nested-inter-connections'
 import { LayerBackgroundObject3d } from './objects3d/layer-background.object3d'
 import { ConnectionAcrossLayersObject3d } from './objects3d/connection-across-layers.object3d'
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subscription } from 'rxjs'
 import { ModuleBaseObject3d } from './objects3d/module-base.object3d'
+import { skip } from 'rxjs/operators'
 
 const colors = [0x3399ff, 0x9933ff, 0xff9933, 0xff3399, 0x33ff99, 0x99ff33]
 type ExpandParams<TParams> = {
@@ -44,7 +45,7 @@ type ExpandParams<TParams> = {
         | ModuleBaseObject3d<NestedModule>
         | ModuleBaseObject3d<Macro>
         | ModuleBaseObject3d<Layer>
-    instancePool: Immutable<Deployers.InstancePool>
+    instancePool$: BehaviorSubject<Immutable<Deployers.InstancePool>>
     workflow: Immutable<Workflows.WorkflowModel>
     layerId?: string
     connectionsGenerator: (
@@ -55,34 +56,84 @@ type ExpandParams<TParams> = {
     args: TParams
 }
 
+function clear(g: Group) {
+    g.children.forEach((c) => {
+        c instanceof Group && clear(c)
+    })
+    g.clear()
+}
+
+function toFlatWorkflowModel(
+    instancePool: Deployers.DeployerTrait,
+    layerId: string,
+): Workflows.WorkflowModel {
+    const flattened = instancePool.inspector().flat()
+    return {
+        uid: '',
+        modules: flattened.modules.map((m) => ({
+            uid: m.uid,
+            typeId: m.typeId,
+            toolboxId: m.toolboxId,
+            toolboxVersion: m.toolboxVersion,
+        })),
+        connections: flattened.connections.map((c) => {
+            return {
+                ...c,
+                configuration: Configurations.extractConfigWith({
+                    configuration: c.configuration,
+                    values: {},
+                }),
+            }
+        }),
+        rootLayer: new Workflows.Layer({
+            uid: layerId,
+            moduleIds: instancePool.modules.map((m) => m.uid),
+        }),
+    }
+}
+
+export type ModulesStore = {
+    [k: string]: ModuleBaseObject3d<Module | NestedModule | Layer | Macro>
+}
+export type PositionsStore = { [k: string]: Vector3 }
+
+export type Dynamic3dContentState = {
+    workflow: Immutable<Workflows.WorkflowModel>
+    modules: Immutables<ModuleBaseObject3d<Module>>
+    groups: Immutables<ModuleBaseObject3d<Layer>>
+    macros: Immutables<ModuleBaseObject3d<Macro>>
+    nestedModules: Immutables<ModuleBaseObject3d<NestedModule>>
+    intraConnection: ConnectionObject3d[]
+    layerBackground: LayerBackgroundObject3d
+    entitiesPositions: Immutable<PositionsStore>
+    modulesStore: Immutable<ModulesStore>
+    layerOrganizer: Immutable<LayerOrganizer>
+    instancePool: Immutable<Deployers.InstancePool>
+}
+
 export class Dynamic3dContent {
     public readonly uid: string
     public readonly isRunning: boolean
     public readonly parent?: Dynamic3dContent
     public readonly environment3d: Environment3D
     public readonly project: Immutable<Projects.ProjectState>
-    public readonly layerOrganizer: Immutable<LayerOrganizer>
-    public readonly instancePool: Immutable<Deployers.InstancePool>
+    public readonly state$: BehaviorSubject<Dynamic3dContentState>
+    public readonly instancePool$: BehaviorSubject<
+        Immutable<Deployers.InstancePool>
+    >
     public readonly layerId: string
-    public readonly workflow: Immutable<Workflows.WorkflowModel>
-    public readonly modules: Immutables<ModuleBaseObject3d<Module>>
-    public readonly groups: Immutables<ModuleBaseObject3d<Layer>>
-    public readonly macros: Immutables<ModuleBaseObject3d<Macro>>
-    public readonly nestedModules: Immutables<ModuleBaseObject3d<NestedModule>>
-    public readonly intraConnection: ConnectionObject3d[]
-    public readonly layerBackground: LayerBackgroundObject3d
     public readonly encapsulatingGroup: Group
-    public readonly entitiesPosition: Immutable<{ [k: string]: Vector3 }>
-    public readonly modulesStore: { [k: string]: Mesh } = {}
     public readonly depthIndex: number = 0
     public readonly baseColor: number
     public readonly onCollapsed?: () => void
     public readonly isFrontLayer$ = new BehaviorSubject(true)
 
+    private readonly subscriptions: Subscription[] = []
+
     constructor(params: {
         isRunning: boolean
         project: Immutable<Projects.ProjectState>
-        instancePool: Immutable<Deployers.InstancePool>
+        instancePool$: BehaviorSubject<Immutable<Deployers.InstancePool>>
         layerId: string
         workflow: Immutable<Workflows.WorkflowModel>
         environment3d: Environment3D
@@ -94,144 +145,83 @@ export class Dynamic3dContent {
         this.uid = this.layerId
         this.encapsulatingGroup = new Group()
         this.baseColor = colors[this.depthIndex]
-        this.layerOrganizer = new LayerOrganizer({
-            instancePool: this.instancePool,
-            project: this.project,
-            layerId: this.layerId,
-            workflow: this.workflow,
-            parent: this.parent && this.parent.layerOrganizer,
+        const state = this.createState({
+            instancePool: params.instancePool$.value,
+            workflow: params.workflow,
         })
-        const dagData = this.layerOrganizer.dagData()
-        this.entitiesPosition = computeCoordinates(
-            dagData,
-            this.depthIndex == 0 ? 0 : 100,
-        )
-        // next 'this as unknown as Immutable<Dynamic3dContent>" is for intellij only, TS is not complaining
-        this.modules = this.layerOrganizer.modules.map((module) => {
-            return moduleObject3d({
-                entity: module,
-                parentLayer: this as unknown as Immutable<Dynamic3dContent>,
-            })
-        })
-        this.macros = this.layerOrganizer.macros.map((macro) => {
-            return macroObject3d({
-                entity: macro,
-                parentLayer: this as unknown as Immutable<Dynamic3dContent>,
-            })
-        })
-        this.groups = this.layerOrganizer.groups.map((group) => {
-            return groupObject3d({
-                entity: group,
-                parentLayer: this as unknown as Immutable<Dynamic3dContent>,
-            })
-        })
-        this.nestedModules = this.layerOrganizer.nestedModules.map(
-            (nestedModule) => {
-                return nestedObject3d({
-                    entity: nestedModule,
-                    parentLayer: this as unknown as Immutable<Dynamic3dContent>,
+        this.state$ = new BehaviorSubject<Dynamic3dContentState>(state)
+        const sub = this.instancePool$
+            .pipe(skip(1))
+            .subscribe((instancePool) => {
+                // When here, it is because the layer represent the instance pool of a Modules.Implementation
+                // with a dynamic instance pool => there is no Workflow.Models associated => a flat one is generated
+                const workflow = toFlatWorkflowModel(instancePool, this.layerId)
+                const gatherBelowLayers = (m: Immutable<Dynamic3dContent>) => {
+                    return m == this ? [] : [m, ...gatherBelowLayers(m.parent)]
+                }
+                const layers = gatherBelowLayers(this.environment3d.frontLayer)
+
+                if (instancePool.modules.length == 0) {
+                    layers.push(this)
+                }
+                Promise.all(layers.map((l) => l.collapse())).then(() => {
+                    clear(this.encapsulatingGroup)
+                    const crossingConnections =
+                        this.environment3d.rootGroup.children.filter((obj) => {
+                            return (
+                                obj.userData?.type == 'CrossingConnections' &&
+                                obj.userData.to == this.uid
+                            )
+                        })
+                    crossingConnections.forEach((c) =>
+                        this.environment3d.rootGroup.remove(c),
+                    )
+                    const state = this.createState({ instancePool, workflow })
+                    this.state$.next(state)
+                    const groupConnectionsWorld = new Group()
+                    groupConnectionsWorld.userData = {
+                        type: 'CrossingConnections',
+                        from: this.parent.uid,
+                        to: this.uid,
+                    }
+                    const module =
+                        this.parent.layerOrganizer.nestedModules.find(
+                            (m) => m.uid == instancePool.parentUid,
+                        )
+                    const connections = nestedInterConnections(
+                        this.parent,
+                        this,
+                        module.instance,
+                    )
+                    connections.length > 0 &&
+                        groupConnectionsWorld.add(...connections)
+                    this.environment3d.rootGroup.add(groupConnectionsWorld)
                 })
-            },
-        )
-
-        this.intraConnection = this.layerOrganizer.intraConnections.map((c) => {
-            return new ConnectionObject3d({
-                parentLayer: this as unknown as Immutable<Dynamic3dContent>,
-                connection: c,
             })
-        })
-
-        this.modulesStore = [
-            ...this.modules,
-            ...this.groups,
-            ...this.macros,
-            ...this.nestedModules,
-        ].reduce((acc, e) => ({ ...acc, [e.entity.uid]: e }), {})
-
-        if (Object.keys(this.modulesStore).length == 0) {
-            return
-        }
-        this.encapsulatingGroup.add(
-            ...Object.values(this.modulesStore),
-            ...this.intraConnection,
-        )
-        this.layerBackground = new LayerBackgroundObject3d({
-            // next 'this as unknown as Immutable<Environment3D>" is for intellij only, TS is not complaining
-            environment3d: this
-                .environment3d as unknown as Immutable<Environment3D>,
-            entity: this,
-            group: this.encapsulatingGroup,
-            color: this.baseColor,
-        })
-        this.encapsulatingGroup.add(this.layerBackground)
+        this.subscriptions.push(sub)
     }
 
     getSelectables() {
+        const state = this.state$.value
         return [
-            ...this.modules,
-            ...this.intraConnection,
-            ...this.macros,
-            ...this.groups,
-            ...this.nestedModules,
-            this.layerBackground,
+            ...state.modules,
+            ...state.intraConnection,
+            ...state.macros,
+            ...state.groups,
+            ...state.nestedModules,
+            state.layerBackground,
         ]
             .filter((obj) => obj != undefined)
             .map((m) => m.children)
             .flat() as SelectableObject3D[]
     }
 
-    getConnectedSlot(
-        connection: Immutable<Connections.ConnectionModel>,
-        toExtremity: 'start' | 'end',
-    ): Object3D {
-        const other = toExtremity == 'start' ? 'end' : 'start'
-        const slotId = connection[other].slotId
-        const module = [
-            ...this.modules,
-            ...this.macros,
-            ...this.nestedModules,
-            ...this.groups,
-        ].find((m) => {
-            return m.entity.uid == connection[other].moduleId
-        })
-        if (!module) {
-            console.error('Can not find module', {
-                target: connection[other].moduleId,
-                layer: this,
-            })
-            return undefined
-        }
-        if (typeof slotId == 'string') {
-            return toExtremity == 'end'
-                ? module.getOutputSlot(slotId)
-                : module.getInputSlot(slotId)
-        }
-        const slots = Object.values(
-            toExtremity == 'end' ? module.outputSlots : module.inputSlots,
-        )
-        const slot = slots[connection[other].slotId]
-        if (!slot) {
-            console.error('Can not find slot', {
-                target: connection[other].slotId,
-                layer: this,
-                module,
-                slots,
-                toExtremity,
-            })
-            return undefined
-        }
-        return toExtremity == 'end'
-            ? module.getOutputSlot(slot.slotId)
-            : module.getInputSlot(slot.slotId)
-    }
-
     expandMacro(from: ModuleBaseObject3d<Macro>) {
-        const instancePool = from.entity.instance.instancePool$.value
         const workflow = from.entity.model
 
         this.expandBase({
             from,
-            instancePool,
+            instancePool$: from.entity.instance.instancePool$,
             workflow,
             connectionsGenerator: macroInterConnections,
             args: from.entity,
@@ -240,54 +230,73 @@ export class Dynamic3dContent {
 
     expandGroup(from: ModuleBaseObject3d<Layer>) {
         const workflow = from.entity.workflow
-        const instancePool = this.instancePool
         this.expandBase({
             from,
-            instancePool,
+            instancePool$: this.instancePool$,
             workflow,
             layerId: from.entity.uid,
             connectionsGenerator: groupInterConnections,
-            args: { workflow, layer: from.entity.model, instancePool },
+            args: {
+                workflow,
+                layer: from.entity.model,
+                instancePool: this.instancePool$.value,
+            },
         })
     }
 
     expandNestedModule(from: ModuleBaseObject3d<NestedModule>) {
         const instancePool = from.entity.instance.instancePool$.value
-        const workflow = instancePool.inspector().toFlatWorkflowModel()
+        const workflow = toFlatWorkflowModel(instancePool, from.entity.uid) //instancePool.inspector().toFlatWorkflowModel()
         this.expandBase({
             from,
-            instancePool,
+            instancePool$: from.entity.instance.instancePool$,
             workflow,
+            layerId: from.entity.uid,
             connectionsGenerator: nestedInterConnections,
             args: from.entity.instance,
         })
     }
 
-    collapse() {
-        const onDone = () => {
-            this.onCollapsed && this.onCollapsed()
-            const toRemove = [...this.getSelectables(), this.encapsulatingGroup]
-            toRemove.forEach((obj) => obj.parent.remove(obj))
-            this.environment3d.removeSelectables(...this.getSelectables())
-        }
-        this.environment3d.frontLayer = this.parent
-        const crossingConnections = this.environment3d.rootGroup.children.find(
-            (obj) => {
-                return (
-                    obj.userData?.type == 'CrossingConnections' &&
-                    obj.userData.to == this.uid
-                )
-            },
-        )
-        this.environment3d.rootGroup.remove(crossingConnections)
-        collapseGroupAnimation({
-            group: this.encapsulatingGroup,
-            parentGroup: this.parent.encapsulatingGroup,
-            onDone,
-            duration: 2,
-            environment3d: this.environment3d,
+    async collapse() {
+        return new Promise<void>((resolve) => {
+            const onDone = () => {
+                this.onCollapsed && this.onCollapsed()
+                const toRemove = [
+                    ...this.getSelectables(),
+                    this.encapsulatingGroup,
+                ]
+                toRemove.forEach((obj) => obj.parent.remove(obj))
+                this.environment3d.removeSelectables(...this.getSelectables())
+                this.subscriptions.forEach((sub) => sub.unsubscribe())
+                resolve()
+            }
+            this.environment3d.frontLayer = this.parent
+            const crossingConnections =
+                this.environment3d.rootGroup.children.find((obj) => {
+                    return (
+                        obj.userData?.type == 'CrossingConnections' &&
+                        obj.userData.to == this.uid
+                    )
+                })
+            this.environment3d.rootGroup.remove(crossingConnections)
+            collapseGroupAnimation({
+                group: this.encapsulatingGroup,
+                parentGroup: this.parent.encapsulatingGroup,
+                onDone,
+                duration: 2,
+                environment3d: this.environment3d,
+            })
         })
     }
+
+    get layerOrganizer() {
+        return this.state$.value.layerOrganizer
+    }
+
+    get state() {
+        return this.state$.value
+    }
+
     private transparent = false
 
     toggleTransparent() {
@@ -297,7 +306,7 @@ export class Dynamic3dContent {
 
     private expandBase<TParams>({
         from,
-        instancePool,
+        instancePool$,
         workflow,
         layerId,
         connectionsGenerator,
@@ -308,7 +317,7 @@ export class Dynamic3dContent {
             isRunning: this.isRunning,
             project: this.project,
             environment3d: this.environment3d,
-            instancePool,
+            instancePool$,
             workflow,
             layerId: layerId || workflow.rootLayer.uid,
             depthIndex: this.depthIndex + 1,
@@ -324,7 +333,7 @@ export class Dynamic3dContent {
         const originalColor = from.material.color
         const uid = from.entity.uid
         const connections = [
-            ...this.intraConnection.filter(
+            ...this.state$.value.intraConnection.filter(
                 (c) =>
                     c.connection.model.start.moduleId == uid ||
                     c.connection.model.end.moduleId == uid,
@@ -375,6 +384,104 @@ export class Dynamic3dContent {
             environment3d: this.environment3d,
         })
         this.environment3d.setFrontLayer(dynamicContent3d)
+    }
+
+    private createState({
+        instancePool,
+        workflow,
+    }: {
+        instancePool: Immutable<Deployers.InstancePool>
+        workflow: Workflows.WorkflowModel
+    }): Dynamic3dContentState {
+        const layerOrganizer = new LayerOrganizer({
+            instancePool,
+            project: this.project,
+            layerId: this.layerId,
+            workflow: workflow,
+            parent: this.parent && this.parent.layerOrganizer,
+        })
+        const dagData = layerOrganizer.dagData()
+        const entitiesPositions = computeCoordinates(
+            dagData,
+            this.depthIndex == 0 ? 0 : 100,
+        )
+        // next 'this as unknown as Immutable<Dynamic3dContent>" is for intellij only, TS is not complaining
+        const modules = layerOrganizer.modules.map((module) => {
+            return moduleObject3d({
+                entity: module,
+                parentLayer: this as unknown as Immutable<Dynamic3dContent>,
+                entitiesPositions,
+            })
+        })
+        const macros = layerOrganizer.macros.map((macro) => {
+            return macroObject3d({
+                entity: macro,
+                parentLayer: this as unknown as Immutable<Dynamic3dContent>,
+                entitiesPositions,
+            })
+        })
+        const groups = layerOrganizer.groups.map((group) => {
+            return groupObject3d({
+                entity: group,
+                parentLayer: this as unknown as Immutable<Dynamic3dContent>,
+                entitiesPositions,
+                layerOrganizer,
+            })
+        })
+        const nestedModules = layerOrganizer.nestedModules.map(
+            (nestedModule) => {
+                return nestedObject3d({
+                    entity: nestedModule,
+                    parentLayer: this as unknown as Immutable<Dynamic3dContent>,
+                    entitiesPositions,
+                })
+            },
+        )
+
+        const modulesStore: ModulesStore = [
+            ...modules,
+            ...groups,
+            ...macros,
+            ...nestedModules,
+        ].reduce((acc, e) => ({ ...acc, [e.entity.uid]: e }), {})
+
+        const intraConnection = layerOrganizer.intraConnections.map((c) => {
+            return new ConnectionObject3d({
+                parentLayer: this as unknown as Immutable<Dynamic3dContent>,
+                connection: c,
+                modulesStore,
+            })
+        })
+
+        let layerBackground
+        if (Object.keys(modulesStore).length != 0) {
+            this.encapsulatingGroup.add(
+                ...Object.values(modulesStore),
+                ...intraConnection,
+            )
+            layerBackground = new LayerBackgroundObject3d({
+                environment3d: this
+                    .environment3d as unknown as Immutable<Environment3D>,
+                entity: this,
+                group: this.encapsulatingGroup,
+                color: this.baseColor,
+            })
+            this.encapsulatingGroup.add(layerBackground)
+        }
+
+        return {
+            instancePool,
+            workflow,
+            modules,
+            groups,
+            macros,
+            nestedModules,
+            intraConnection,
+            layerBackground,
+            entitiesPositions: entitiesPositions,
+            modulesStore,
+            layerOrganizer,
+        }
     }
 }
 

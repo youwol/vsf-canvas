@@ -15,7 +15,7 @@ import { Projects, Immutable, Immutable$ } from '@youwol/vsf-core'
 import { CSS3DRenderer } from './renderers'
 import * as THREE from 'three'
 import { fitSceneToContent, prepareWorkflowAndInstancePool } from './utils'
-import { ReplaySubject, Subject, Subscription } from 'rxjs'
+import { BehaviorSubject, ReplaySubject, Subject, Subscription } from 'rxjs'
 import { Module, SelectableObject3D } from './models'
 import { Dynamic3dContent } from './dynamic-content'
 import { focusOnGroupAnimation } from './objects3d/utils'
@@ -127,7 +127,7 @@ export class Environment3D {
                 const dynamicContent3d = new Dynamic3dContent({
                     isRunning: workflow == project.main,
                     project: project,
-                    instancePool,
+                    instancePool$: new BehaviorSubject(instancePool),
                     layerId: workflow.rootLayer.uid,
                     workflow,
                     environment3d: this,
@@ -319,8 +319,8 @@ export class Environment3D {
     private setSelectables() {
         const bgdSelectables = (layer: Immutable<Dynamic3dContent>) =>
             layer.parent
-                ? [layer.layerBackground, ...bgdSelectables(layer.parent)]
-                : [layer.layerBackground]
+                ? [layer.state.layerBackground, ...bgdSelectables(layer.parent)]
+                : [layer.state.layerBackground]
         this.selectables = [
             ...this.frontLayer.getSelectables(),
             ...bgdSelectables(this.frontLayer),

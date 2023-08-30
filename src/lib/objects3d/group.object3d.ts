@@ -1,6 +1,10 @@
 import { Immutable, Deployers } from '@youwol/vsf-core'
 import { Layer } from '../models'
-import { Dynamic3dContent } from '../dynamic-content'
+import {
+    Dynamic3dContent,
+    LayerOrganizer,
+    PositionsStore,
+} from '../dynamic-content'
 import { BehaviorSubject } from 'rxjs'
 import { ModuleBaseObject3d } from './module-base.object3d'
 import { ExpandAction } from './actions-row.object3d'
@@ -8,12 +12,16 @@ import { ExpandAction } from './actions-row.object3d'
 export function groupObject3d({
     entity,
     parentLayer,
+    entitiesPositions,
+    layerOrganizer,
 }: {
     entity: Immutable<Layer>
     parentLayer: Immutable<Dynamic3dContent>
+    entitiesPositions: PositionsStore
+    layerOrganizer: Immutable<LayerOrganizer>
 }) {
     const { downStreamConnections, upStreamConnections } =
-        parentLayer.layerOrganizer.equivalentGroupConnections(entity.uid)
+        layerOrganizer.equivalentGroupConnections(entity.uid)
     const inputSlots = upStreamConnections
         .map((c) => {
             return c.model.end
@@ -55,6 +63,7 @@ export function groupObject3d({
     const object = new ModuleBaseObject3d<Layer>({
         parentLayer: parentLayer,
         entity: entity,
+        entitiesPositions,
         inputSlots: inputSlots,
         outputSlots: outputSlots,
         instancePool$,

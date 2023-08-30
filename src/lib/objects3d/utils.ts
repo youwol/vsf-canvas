@@ -17,7 +17,7 @@ import { InterLayerConnection, Macro } from '../models'
 import { Environment3D } from '../environment3d'
 import * as THREE from 'three'
 import { getBoundingBox } from '../utils'
-import { Dynamic3dContent } from '../dynamic-content'
+import { Dynamic3dContent, ModulesStore } from '../dynamic-content'
 import { TextGeometry } from '../geometries/text-geometry'
 import { Font } from '../loaders/font-loaders'
 import { ConnectionAcrossLayersObject3d } from './connection-across-layers.object3d'
@@ -415,4 +415,44 @@ export function setOpacity(objects, opacity, level = 0) {
         }
         obj.material && (obj.material.needsUpdate = true)
     })
+}
+
+export function getConnectedSlot(
+    modulesStore: Immutable<ModulesStore>,
+    connection: Immutable<Connections.ConnectionModel>,
+    toExtremity: 'start' | 'end',
+): Object3D {
+    const other = toExtremity == 'start' ? 'end' : 'start'
+    const slotId = connection[other].slotId
+    const module = modulesStore[connection[other].moduleId]
+
+    if (!module) {
+        console.error('Can not find module', {
+            target: connection[other].moduleId,
+            modulesStore,
+        })
+        return undefined
+    }
+    if (typeof slotId == 'string') {
+        return toExtremity == 'end'
+            ? module.getOutputSlot(slotId)
+            : module.getInputSlot(slotId)
+    }
+    const slots = Object.values(
+        toExtremity == 'end' ? module.outputSlots : module.inputSlots,
+    )
+    const slot = slots[connection[other].slotId]
+    if (!slot) {
+        console.error('Can not find slot', {
+            target: connection[other].slotId,
+            modulesStore,
+            module,
+            slots,
+            toExtremity,
+        })
+        return undefined
+    }
+    return toExtremity == 'end'
+        ? module.getOutputSlot(slot.slotId)
+        : module.getInputSlot(slot.slotId)
 }

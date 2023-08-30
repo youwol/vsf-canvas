@@ -3,7 +3,7 @@ import { Immutable } from '@youwol/vsf-core'
 import { SelectableTrait, Selector } from './traits'
 import { InterLayerConnection } from '../models'
 import { Dynamic3dContent } from '../dynamic-content'
-import { transformPosition } from './utils'
+import { getConnectedSlot, transformPosition } from './utils'
 import { connection } from './connection.object3d'
 
 export class ConnectionAcrossLayersObject3d
@@ -35,18 +35,25 @@ export class ConnectionAcrossLayersObject3d
         this.name = this.connection.uid
         const startMesh =
             this.connection.startLayerId == this.parentLayer.layerId
-                ? this.parentLayer.getConnectedSlot(
+                ? getConnectedSlot(
+                      this.parentLayer.state.modulesStore,
                       this.connection.model,
                       'end',
                   )
-                : this.childLayer.getConnectedSlot(this.connection.model, 'end')
+                : getConnectedSlot(
+                      this.childLayer.state.modulesStore,
+                      this.connection.model,
+                      'end',
+                  )
         const endMesh =
             this.connection.startLayerId == this.parentLayer.layerId
-                ? this.childLayer.getConnectedSlot(
+                ? getConnectedSlot(
+                      this.childLayer.state.modulesStore,
                       this.connection.model,
                       'start',
                   )
-                : this.parentLayer.getConnectedSlot(
+                : getConnectedSlot(
+                      this.parentLayer.state.modulesStore,
                       this.connection.model,
                       'start',
                   )
