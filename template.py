@@ -19,7 +19,7 @@ pkg_json = parse_json(folder_path / "package.json")
 load_dependencies = {
     "@youwol/cdn-client": "^2.0.6",
     "@youwol/flux-view": "^1.1.1",
-    "@youwol/vsf-core": "^0.2.0",
+    "@youwol/vsf-core": "^0.2.1",
     "rxjs": "^6.5.5",
     "three": "^0.152.0",
 }
