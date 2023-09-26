@@ -107,27 +107,41 @@ export function prepareWorkflowAndInstancePool(
     project: Projects.ProjectState,
     workflowId: string,
 ) {
-    const workflow =
-        workflowId == 'main'
-            ? project.main
-            : project.macros.find((m) => m.uid == workflowId)
-
-    return workflowId == 'main'
-        ? of({
-              workflow,
-              project,
-              instancePool: project.instancePool,
-          })
-        : from(
-              createSupportingMacroInstancePool({
-                  workflow,
-                  environment: project.environment,
-              }),
-          ).pipe(
-              map((instancePool) => ({
-                  workflow,
-                  project,
-                  instancePool,
-              })),
-          )
+    if (workflowId === 'main') {
+        return of({
+            workflow: project.main,
+            project,
+            instancePool: project.instancePool,
+            isRunning: true,
+        })
+    }
+    const macro = project.macros.find((m) => m.uid === workflowId)
+    if (macro !== undefined) {
+        return from(
+            createSupportingMacroInstancePool({
+                workflow: macro,
+                environment: project.environment,
+            }),
+        ).pipe(
+            map((instancePool) => ({
+                workflow: macro,
+                project,
+                instancePool,
+                isRunning: false,
+            })),
+        )
+    }
+    const worksheet = project.runningWorksheets.find(
+        (ws) => ws.uid === workflowId,
+    )
+    if (worksheet !== undefined) {
+        return of({
+            workflow: worksheet.workflow,
+            project,
+            instancePool: worksheet.instancePool,
+            isRunning: true,
+        })
+    }
+    console.warn(`Can not find workflow ${workflowId}`)
+    return of(undefined)
 }
