@@ -21,7 +21,7 @@ import { Dynamic3dContent } from './dynamic-content'
 import { focusOnGroupAnimation } from './objects3d/utils'
 import { MouseControls } from './controls/mouse.controls'
 import { StateTrait } from './renderer3d.view'
-import { mergeMap, tap } from 'rxjs/operators'
+import { filter, mergeMap, tap } from 'rxjs/operators'
 
 interface RendererTrait {
     setSize: (w: number, h: number) => void
@@ -121,11 +121,12 @@ export class Environment3D {
                         this.workflowId,
                     )
                 }),
+                filter((data) => data !== undefined),
             )
-            .subscribe(({ workflow, project, instancePool }) => {
+            .subscribe(({ workflow, project, instancePool, isRunning }) => {
                 this.clear()
                 const dynamicContent3d = new Dynamic3dContent({
-                    isRunning: workflow == project.main,
+                    isRunning,
                     project: project,
                     instancePool$: new BehaviorSubject(instancePool),
                     layerId: workflow.rootLayer.uid,
