@@ -344,13 +344,11 @@ export class Environment3D {
             }
 
             if (this.hovered && this.hovered != obj) {
-                this.hovered.userData.selector &&
-                    this.hovered.userData.selector.onRestored()
+                this.hovered.userData.selector?.onRestored()
                 this.hovered = obj
             }
             this.hovered = intersects[0].object as unknown as SelectableObject3D
-            this.hovered.userData.selector &&
-                this.hovered.userData.selector.onHovered()
+            this.hovered.userData.selector?.onHovered()
         }
         if (
             intersects.length == 0 &&
