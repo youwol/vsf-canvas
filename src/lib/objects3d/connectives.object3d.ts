@@ -51,6 +51,8 @@ export class ConnectivesObject3d extends Group {
             bbox.max.x + xPadding,
             this.outputSlots,
         )
-        this.add(...meshesIn, ...meshesOut)
+        if (meshesIn.length != 0 || meshesOut.length) {
+            this.add(...meshesIn, ...meshesOut)
+        }
     }
 }
