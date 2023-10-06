@@ -702,7 +702,11 @@ export class LayerOrganizer {
             )
             throw Error('Can not determine relative of given slot')
         }
-        if (!this.instancePool.connectionsHint[slot.moduleId]) {
+        const hint = this.instancePool.connectionsHint.find((h) => {
+            const type = fromExtremity === 'end' ? 'input' : 'output'
+            return h.type === type && h.child.moduleId === slot.moduleId
+        })
+        if (!hint) {
             console.error(
                 `No connections hint available for target module '${slot.moduleId}' to determine connection to parent`,
                 {
@@ -712,13 +716,12 @@ export class LayerOrganizer {
             )
             throw Error('Can not determine relative of given slot')
         }
-        const hint = this.instancePool.connectionsHint[slot.moduleId]
+
         // here we have either a NestedModule or a MacroModule
         // In case of nested Module we need one nested module with one input (practical case of *MapMacro)
         return organizer.findRelative(
             {
-                slotId:
-                    fromExtremity == 'end' ? hint.parent.from : hint.parent.to,
+                slotId: hint.parent,
                 moduleId: parentModule.uid,
             },
             fromExtremity,
