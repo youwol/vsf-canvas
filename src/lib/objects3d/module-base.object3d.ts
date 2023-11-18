@@ -34,7 +34,7 @@ import {
     DisplayJournalAction,
     DisplayViewAction,
 } from './actions-row.object3d'
-import { VirtualDOM } from '@youwol/flux-view'
+import { VirtualDOM } from '@youwol/rx-vdom'
 import { CustomHtmlObject3d } from './custom-html.object3d'
 
 export class ModuleBaseObject3d<
@@ -61,7 +61,7 @@ export class ModuleBaseObject3d<
         parentLayer: Immutable<Dynamic3dContent>
         entity: Immutable<TEntity>
         entitiesPositions: PositionsStore
-        customActions?: VirtualDOM[]
+        customActions?: VirtualDOM<'div'>[]
         inputSlots: { [k: string]: Modules.SlotTrait }
         outputSlots: { [k: string]: Modules.SlotTrait }
         instancePool$?: Immutable$<Deployers.DeployerTrait>

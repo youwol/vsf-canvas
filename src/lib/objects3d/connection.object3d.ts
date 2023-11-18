@@ -14,7 +14,7 @@ import {
 } from 'three'
 import { Immutable } from '@youwol/vsf-core'
 import { SelectableTrait, Selector } from './traits'
-import { render } from '@youwol/flux-view'
+import { render } from '@youwol/rx-vdom'
 import { CSS3DObject } from '../renderers'
 import { IntraLayerConnection } from '../models'
 import { Dynamic3dContent, ModulesStore } from '../dynamic-content'
@@ -171,6 +171,7 @@ export function connection(
     let canvas
     if (canvasView.length > 0) {
         const vDOM = {
+            tag: 'div' as const,
             children: canvasView,
         }
         const dir = new Vector3().subVectors(end, start).normalize()

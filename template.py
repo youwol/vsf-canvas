@@ -18,7 +18,7 @@ pkg_json = parse_json(folder_path / "package.json")
 
 load_dependencies = {
     "@youwol/webpm-client": "^2.2.0",
-    "@youwol/flux-view": "^1.1.1",
+    "@youwol/rx-vdom": "^1.0.1",
     "@youwol/vsf-core": "^0.2.3",
     "rxjs": "^6.5.5",
     "three": "^0.152.0",
@@ -61,7 +61,7 @@ for file in [
     "README.md",
     "package.json",
     "jest.config.ts",
-    "tsconfig.json",
+    # "tsconfig.json", tsconfig needs to account for rx-vdom-config
     "webpack.config.ts",
 ]:
     shutil.copyfile(src=folder_path / ".template" / file, dst=folder_path / file)
