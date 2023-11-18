@@ -1,8 +1,8 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/cdn-client": "^2.0.6",
-        "@youwol/flux-view": "^1.1.1",
+        "@youwol/webpm-client": "^2.2.0",
+        "@youwol/rx-vdom": "^1.0.1",
         "@youwol/vsf-core": "^0.2.3",
         "rxjs": "^6.5.5",
         "three": "^0.152.0",
@@ -15,15 +15,15 @@ const runTimeDependencies = {
     }
 }
 const externals = {
-    "@youwol/cdn-client": {
-        "commonjs": "@youwol/cdn-client",
-        "commonjs2": "@youwol/cdn-client",
-        "root": "@youwol/cdn-client_APIv2"
+    "@youwol/webpm-client": {
+        "commonjs": "@youwol/webpm-client",
+        "commonjs2": "@youwol/webpm-client",
+        "root": "@youwol/webpm-client_APIv2"
     },
-    "@youwol/flux-view": {
-        "commonjs": "@youwol/flux-view",
-        "commonjs2": "@youwol/flux-view",
-        "root": "@youwol/flux-view_APIv1"
+    "@youwol/rx-vdom": {
+        "commonjs": "@youwol/rx-vdom",
+        "commonjs2": "@youwol/rx-vdom",
+        "root": "@youwol/rx-vdom_APIv1"
     },
     "@youwol/vsf-core": {
         "commonjs": "@youwol/vsf-core",
@@ -65,13 +65,13 @@ const externals = {
     }
 }
 const exportedSymbols = {
-    "@youwol/cdn-client": {
+    "@youwol/webpm-client": {
         "apiKey": "2",
-        "exportedSymbol": "@youwol/cdn-client"
+        "exportedSymbol": "@youwol/webpm-client"
     },
-    "@youwol/flux-view": {
+    "@youwol/rx-vdom": {
         "apiKey": "1",
-        "exportedSymbol": "@youwol/flux-view"
+        "exportedSymbol": "@youwol/rx-vdom"
     },
     "@youwol/vsf-core": {
         "apiKey": "02",
@@ -102,8 +102,8 @@ const exportedSymbols = {
 const mainEntry : {entryFile: string,loadDependencies:string[]} = {
     "entryFile": "./index.ts",
     "loadDependencies": [
-        "@youwol/cdn-client",
-        "@youwol/flux-view",
+        "@youwol/webpm-client",
+        "@youwol/rx-vdom",
         "@youwol/vsf-core",
         "rxjs",
         "three"

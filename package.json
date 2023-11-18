@@ -28,8 +28,8 @@
         ]
     },
     "dependencies": {
-        "@youwol/cdn-client": "^2.0.6",
-        "@youwol/flux-view": "^1.1.1",
+        "@youwol/webpm-client": "^2.2.0",
+        "@youwol/rx-vdom": "^1.0.1",
         "@youwol/vsf-core": "^0.2.3",
         "rxjs": "^6.5.5",
         "three": "^0.152.0",
@@ -58,8 +58,8 @@
     },
     "webpm": {
         "dependencies": {
-            "@youwol/cdn-client": "^2.0.6",
-            "@youwol/flux-view": "^1.1.1",
+            "@youwol/webpm-client": "^2.2.0",
+            "@youwol/rx-vdom": "^1.0.1",
             "@youwol/vsf-core": "^0.2.3",
             "rxjs": "^6.5.5",
             "three": "^0.152.0"
