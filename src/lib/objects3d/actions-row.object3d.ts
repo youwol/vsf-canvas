@@ -9,7 +9,7 @@ import {
     Modules,
     HtmlTrait,
 } from '@youwol/vsf-core'
-import { WorkersPoolTypes } from '@youwol/cdn-client'
+import { WorkersPoolTypes } from '@youwol/webpm-client'
 import { StateTrait } from '../renderer3d.view'
 
 export class ActionsRowObject3d extends Group {

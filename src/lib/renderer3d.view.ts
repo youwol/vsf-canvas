@@ -12,7 +12,7 @@ import {
 import { ConfigurationEnv3D, Environment3D } from './environment3d'
 import { BehaviorSubject, from, of, ReplaySubject } from 'rxjs'
 import { delay, map, mergeMap, shareReplay, skip } from 'rxjs/operators'
-import { install } from '@youwol/cdn-client'
+import { install } from '@youwol/webpm-client'
 import { setup } from '../auto-generated'
 import Stats from 'stats.js'
 
