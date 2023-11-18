@@ -191,15 +191,14 @@ export function connection(
             connection: connection,
         })
     }
-    connection.instance &&
-        connection.instance.status$
-            .pipe(takeUntil(environment.projectSwitch$))
-            .subscribe((status) => {
-                const { transparent, opacity } = line.material
-                line.material = materials[status]
-                line.material.transparent = transparent
-                line.material.opacity = opacity
-            })
+    connection.instance?.status$
+        .pipe(takeUntil(environment.projectSwitch$))
+        .subscribe((status) => {
+            const { transparent, opacity } = line.material
+            line.material = materials[status]
+            line.material.transparent = transparent
+            line.material.opacity = opacity
+        })
     return [line, adaptor, arrowHelper, canvas].filter(
         (obj) => obj != undefined,
     )

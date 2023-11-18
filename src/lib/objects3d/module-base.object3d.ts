@@ -161,9 +161,9 @@ export class ModuleBaseObject3d<
             .filter((elem) => elem.selector(this.entity.instance))
             // `view` is kept for backward compatibility for now (10/05/2023)
             .map((elem) => (elem.html || elem['view'])(this.entity.instance))
-        const defaultCanvasView =
-            this.entity.instance.canvas &&
-            this.entity.instance.canvas(this.entity.instance)
+        const defaultCanvasView = this.entity.instance.canvas?.(
+            this.entity.instance,
+        )
         const children = [...canvasView, defaultCanvasView].filter(
             (d) => d != undefined,
         )
