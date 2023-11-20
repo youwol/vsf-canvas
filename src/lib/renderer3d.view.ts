@@ -125,6 +125,9 @@ export class Renderer3DView {
  * @category View
  */
 export class StatsView implements VirtualDOM<'div'> {
+    /**
+     * Immutable DOM Constants
+     */
     public readonly tag: 'div'
     /**
      * Immutable DOM Constants
