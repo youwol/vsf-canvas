@@ -1,5 +1,5 @@
 import { Group } from 'three'
-import { render, VirtualDOM } from '@youwol/rx-vdom'
+import { render, VirtualDOM, RxAttribute } from '@youwol/rx-vdom'
 import { CSS3DObject } from '../renderers'
 import { Observable } from 'rxjs'
 import {
@@ -46,7 +46,7 @@ const baseStyle = {
 }
 export class ExpandAction implements VirtualDOM<'div'> {
     public readonly tag = 'div'
-    public readonly class
+    public readonly class: RxAttribute<Deployers.InstancePool, string>
     public readonly onclick: (ev: MouseEvent) => void
     public readonly style = baseStyle
     constructor({
