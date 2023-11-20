@@ -32,10 +32,11 @@ export interface StateTrait {
     )
 }
 
-export class Renderer3DView {
+export class Renderer3DView implements VirtualDOM<'div'> {
+    public readonly tag: 'div'
     public readonly class = 'h-100 w-100'
     public readonly style = {
-        position: 'relative',
+        position: 'relative' as const,
     }
     public readonly project$: Immutable$<Projects.ProjectState>
     public readonly state: Immutable<StateTrait>
