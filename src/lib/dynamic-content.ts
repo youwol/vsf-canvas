@@ -260,7 +260,7 @@ export class Dynamic3dContent {
     async collapse() {
         return new Promise<void>((resolve) => {
             const onDone = () => {
-                this.onCollapsed && this.onCollapsed()
+                this.onCollapsed?.()
                 const toRemove = [
                     ...this.getSelectables(),
                     this.encapsulatingGroup,
@@ -398,7 +398,7 @@ export class Dynamic3dContent {
             project: this.project,
             layerId: this.layerId,
             workflow: workflow,
-            parent: this.parent && this.parent.layerOrganizer,
+            parent: this.parent?.layerOrganizer,
         })
         const dagData = layerOrganizer.dagData()
         const entitiesPositions = computeCoordinates(
@@ -531,11 +531,7 @@ export class LayerOrganizer {
                     (m) => m.uid == model.uid,
                 ),
             }))
-            .filter(
-                ({ instance }) =>
-                    instance != undefined &&
-                    instance.instancePool$ != undefined,
-            )
+            .filter(({ instance }) => instance?.instancePool$ != undefined)
             .map(({ model, instance }) => {
                 return {
                     uid: model.uid,
