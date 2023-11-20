@@ -176,7 +176,7 @@ export function connection(
         }
         const dir = new Vector3().subVectors(end, start).normalize()
         const pos = start.clone().add(dir.clone().multiplyScalar(l * 0.5))
-        const htmlElement = render(vDOM) as unknown as HTMLDivElement
+        const htmlElement = render(vDOM)
         htmlElement.style.fontSize = '3px'
         const obj = new CSS3DObject(htmlElement)
         obj.position.set(pos.x, pos.y + 2, pos.z)

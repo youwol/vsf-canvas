@@ -460,8 +460,7 @@ export class Dynamic3dContent {
                 ...intraConnection,
             )
             layerBackground = new LayerBackgroundObject3d({
-                environment3d: this
-                    .environment3d as unknown as Immutable<Environment3D>,
+                environment3d: this.environment3d,
                 entity: this,
                 group: this.encapsulatingGroup,
                 color: this.baseColor,

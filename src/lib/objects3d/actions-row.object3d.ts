@@ -33,7 +33,7 @@ export class ActionsRowObject3d extends Group {
             },
             children: params.actions,
         }
-        const htmlElement = render(vDOM) as unknown as HTMLDivElement
+        const htmlElement = render(vDOM)
         this.object = new CSS3DObject(htmlElement)
         this.add(this.object)
         this.object.layers.set(0)
