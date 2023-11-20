@@ -1,12 +1,12 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/webpm-client": "^2.2.0",
+        "@youwol/webpm-client": "^3.0.0",
         "@youwol/rx-vdom": "^1.0.1",
-        "@youwol/vsf-core": "^0.2.3",
-        "rxjs": "^6.5.5",
+        "@youwol/vsf-core": "^0.3.0",
+        "rxjs": "^7.5.6",
         "three": "^0.152.0",
-        "@youwol/fv-tabs": "^0.2.1",
+        "@youwol/rx-tab-views": "^0.3.0",
         "stats.js": "^0.17.0",
         "@types/three": "^0.152.0"
     },
@@ -18,7 +18,7 @@ const externals = {
     "@youwol/webpm-client": {
         "commonjs": "@youwol/webpm-client",
         "commonjs2": "@youwol/webpm-client",
-        "root": "@youwol/webpm-client_APIv2"
+        "root": "@youwol/webpm-client_APIv3"
     },
     "@youwol/rx-vdom": {
         "commonjs": "@youwol/rx-vdom",
@@ -28,22 +28,22 @@ const externals = {
     "@youwol/vsf-core": {
         "commonjs": "@youwol/vsf-core",
         "commonjs2": "@youwol/vsf-core",
-        "root": "@youwol/vsf-core_APIv02"
+        "root": "@youwol/vsf-core_APIv03"
     },
     "rxjs": {
         "commonjs": "rxjs",
         "commonjs2": "rxjs",
-        "root": "rxjs_APIv6"
+        "root": "rxjs_APIv7"
     },
     "three": {
         "commonjs": "three",
         "commonjs2": "three",
         "root": "THREE_APIv0152"
     },
-    "@youwol/fv-tabs": {
-        "commonjs": "@youwol/fv-tabs",
-        "commonjs2": "@youwol/fv-tabs",
-        "root": "@youwol/fv-tabs_APIv02"
+    "@youwol/rx-tab-views": {
+        "commonjs": "@youwol/rx-tab-views",
+        "commonjs2": "@youwol/rx-tab-views",
+        "root": "@youwol/rx-tab-views_APIv03"
     },
     "stats.js": {
         "commonjs": "stats.js",
@@ -59,14 +59,14 @@ const externals = {
         "commonjs": "rxjs/operators",
         "commonjs2": "rxjs/operators",
         "root": [
-            "rxjs_APIv6",
+            "rxjs_APIv7",
             "operators"
         ]
     }
 }
 const exportedSymbols = {
     "@youwol/webpm-client": {
-        "apiKey": "2",
+        "apiKey": "3",
         "exportedSymbol": "@youwol/webpm-client"
     },
     "@youwol/rx-vdom": {
@@ -74,20 +74,20 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/rx-vdom"
     },
     "@youwol/vsf-core": {
-        "apiKey": "02",
+        "apiKey": "03",
         "exportedSymbol": "@youwol/vsf-core"
     },
     "rxjs": {
-        "apiKey": "6",
+        "apiKey": "7",
         "exportedSymbol": "rxjs"
     },
     "three": {
         "apiKey": "0152",
         "exportedSymbol": "THREE"
     },
-    "@youwol/fv-tabs": {
-        "apiKey": "02",
-        "exportedSymbol": "@youwol/fv-tabs"
+    "@youwol/rx-tab-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-tab-views"
     },
     "stats.js": {
         "apiKey": "017",

@@ -28,12 +28,12 @@
         ]
     },
     "dependencies": {
-        "@youwol/webpm-client": "^2.2.0",
+        "@youwol/webpm-client": "^3.0.0",
         "@youwol/rx-vdom": "^1.0.1",
-        "@youwol/vsf-core": "^0.2.3",
-        "rxjs": "^6.5.5",
+        "@youwol/vsf-core": "^0.3.0",
+        "rxjs": "^7.5.6",
         "three": "^0.152.0",
-        "@youwol/fv-tabs": "^0.2.1",
+        "@youwol/rx-tab-views": "^0.3.0",
         "stats.js": "^0.17.0",
         "@types/three": "^0.152.0",
         "d3-dag": "0.8.2"
@@ -58,10 +58,10 @@
     },
     "webpm": {
         "dependencies": {
-            "@youwol/webpm-client": "^2.2.0",
+            "@youwol/webpm-client": "^3.0.0",
             "@youwol/rx-vdom": "^1.0.1",
-            "@youwol/vsf-core": "^0.2.3",
-            "rxjs": "^6.5.5",
+            "@youwol/vsf-core": "^0.3.0",
+            "rxjs": "^7.5.6",
             "three": "^0.152.0"
         },
         "aliases": []
