@@ -119,7 +119,7 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-canvas',
         assetId:'QHlvdXdvbC92c2YtY2FudmFz',
-    version:'0.3.0',
+    version:'0.3.1-wip',
     shortDescription:"3D rendering of vs-flow's workflow.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-canvas&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-canvas',
@@ -165,7 +165,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-canvas#0.3.0~dist/@youwol/vsf-canvas/${entry.name}.js`
+            `@youwol/vsf-canvas#0.3.1-wip~dist/@youwol/vsf-canvas/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
