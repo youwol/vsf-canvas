@@ -14,7 +14,7 @@ import {
 } from 'three'
 import { Immutable } from '@youwol/vsf-core'
 import { SelectableTrait, Selector } from './traits'
-import { render } from '@youwol/flux-view'
+import { render } from '@youwol/rx-vdom'
 import { CSS3DObject } from '../renderers'
 import { IntraLayerConnection } from '../models'
 import { Dynamic3dContent, ModulesStore } from '../dynamic-content'
@@ -171,11 +171,12 @@ export function connection(
     let canvas
     if (canvasView.length > 0) {
         const vDOM = {
+            tag: 'div' as const,
             children: canvasView,
         }
         const dir = new Vector3().subVectors(end, start).normalize()
         const pos = start.clone().add(dir.clone().multiplyScalar(l * 0.5))
-        const htmlElement = render(vDOM) as unknown as HTMLDivElement
+        const htmlElement = render(vDOM)
         htmlElement.style.fontSize = '3px'
         const obj = new CSS3DObject(htmlElement)
         obj.position.set(pos.x, pos.y + 2, pos.z)
@@ -190,15 +191,14 @@ export function connection(
             connection: connection,
         })
     }
-    connection.instance &&
-        connection.instance.status$
-            .pipe(takeUntil(environment.projectSwitch$))
-            .subscribe((status) => {
-                const { transparent, opacity } = line.material
-                line.material = materials[status]
-                line.material.transparent = transparent
-                line.material.opacity = opacity
-            })
+    connection.instance?.status$
+        .pipe(takeUntil(environment.projectSwitch$))
+        .subscribe((status) => {
+            const { transparent, opacity } = line.material
+            line.material = materials[status]
+            line.material.transparent = transparent
+            line.material.opacity = opacity
+        })
     return [line, adaptor, arrowHelper, canvas].filter(
         (obj) => obj != undefined,
     )

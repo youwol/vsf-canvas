@@ -1,4 +1,3 @@
-import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
 import {
     Immutable$,
     Immutable,
@@ -12,9 +11,10 @@ import {
 import { ConfigurationEnv3D, Environment3D } from './environment3d'
 import { BehaviorSubject, from, of, ReplaySubject } from 'rxjs'
 import { delay, map, mergeMap, shareReplay, skip } from 'rxjs/operators'
-import { install } from '@youwol/cdn-client'
+import { install } from '@youwol/webpm-client'
 import { setup } from '../auto-generated'
 import Stats from 'stats.js'
+import { VirtualDOM, ChildrenLike } from '@youwol/rx-vdom'
 
 type TStats = typeof Stats
 
@@ -32,14 +32,15 @@ export interface StateTrait {
     )
 }
 
-export class Renderer3DView {
+export class Renderer3DView implements VirtualDOM<'div'> {
+    public readonly tag: 'div'
     public readonly class = 'h-100 w-100'
     public readonly style = {
-        position: 'relative',
+        position: 'relative' as const,
     }
     public readonly project$: Immutable$<Projects.ProjectState>
     public readonly state: Immutable<StateTrait>
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
     public environment3D$: ReplaySubject<Environment3D>
     public readonly configuration$ = new BehaviorSubject({
         antialias: true,
@@ -57,17 +58,18 @@ export class Renderer3DView {
         this.environment3D$ = new ReplaySubject<Environment3D>(1)
         this.children = [
             {
+                tag: 'div',
                 class: 'h-100 w-100',
                 style: { position: 'relative' },
                 children: [
-                    child$(
-                        this.environment3D$,
-                        (env3d) =>
+                    {
+                        source$: this.environment3D$,
+                        vdomMap: (env3d: Environment3D) =>
                             new StatsView({
                                 environment3D: env3d,
                                 configuration$: this.configuration$,
                             }),
-                    ),
+                    },
                 ],
                 disconnectedCallback: () => {
                     this.environment3D.disconnect()
@@ -123,11 +125,15 @@ export class Renderer3DView {
 /**
  * @category View
  */
-export class StatsView implements VirtualDOM {
+export class StatsView implements VirtualDOM<'div'> {
     /**
      * Immutable DOM Constants
      */
-    public readonly children: Immutables<VirtualDOM>
+    public readonly tag: 'div'
+    /**
+     * Immutable DOM Constants
+     */
+    public readonly children: ChildrenLike
 
     /**
      * Observable on the 'stats.js' module.
@@ -160,25 +166,32 @@ export class StatsView implements VirtualDOM {
         configuration$: BehaviorSubject<ConfigurationEnv3D>
     }) {
         this.children = [
-            child$(StatsView.Stats$, (Stats) => {
-                return {
-                    connectedCallback: (elem: HTMLDivElement) => {
-                        const stats = Stats['default']()
-                        stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
-                        const dom = stats.dom
-                        dom.style.position = 'absolute'
-                        dom.style.zIndex = '0'
-                        dom.style.padding = '5px'
-                        elem.appendChild(stats.dom)
-                        environment3D.registerRenderLoopAction('stats.js', {
-                            action: () => stats.update(),
-                        })
-                    },
-                }
-            }),
-            child$(StatsView.Stats$, () => {
-                return new ConfigView(configuration$)
-            }),
+            {
+                source$: StatsView.Stats$,
+                vdomMap: (Stats) => {
+                    return {
+                        tag: 'div',
+                        connectedCallback: (elem: HTMLDivElement) => {
+                            const stats = Stats['default']()
+                            stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+                            const dom = stats.dom
+                            dom.style.position = 'absolute'
+                            dom.style.zIndex = '0'
+                            dom.style.padding = '5px'
+                            elem.appendChild(stats.dom)
+                            environment3D.registerRenderLoopAction('stats.js', {
+                                action: () => stats.update(),
+                            })
+                        },
+                    }
+                },
+            },
+            {
+                source$: StatsView.Stats$,
+                vdomMap: () => {
+                    return new ConfigView(configuration$)
+                },
+            },
         ]
     }
 }
@@ -186,17 +199,21 @@ export class StatsView implements VirtualDOM {
 /**
  * @category View
  */
-export class ConfigView implements VirtualDOM {
+export class ConfigView implements VirtualDOM<'div'> {
     /**
      * Immutable DOM Constants
      */
-    public readonly children: Immutables<VirtualDOM>
+    public readonly tag: 'div'
+    /**
+     * Immutable DOM Constants
+     */
+    public readonly children: ChildrenLike
 
     /**
      * Immutable DOM Constants
      */
     public readonly style = {
-        position: 'absolute',
+        position: 'absolute' as const,
         top: '50px',
         padding: '5px',
         zIndex: 1,
@@ -215,20 +232,22 @@ export class ConfigView implements VirtualDOM {
         )
         const toggle = ({ faClass, obs }) => {
             return {
-                class: attr$(
-                    obs,
-                    (activated): string =>
+                tag: 'div' as const,
+                class: {
+                    source$: obs,
+                    vdomMap: (activated): string =>
                         activated ? `fv-text-focus` : `fv-text-primary`,
-                    {
-                        wrapper: (d) =>
-                            `fas p-1 rounded ${faClass} ${d} fv-pointer fv-hover-bg-background`,
-                    },
-                ),
+                    wrapper: (d) =>
+                        `fas p-1 rounded ${faClass} ${d} fv-pointer fv-hover-bg-background`,
+                },
                 onclick: () => obs.next(!obs.value),
             }
         }
         this.children = [
-            toggle({ faClass: 'fa-signature', obs: this.antiAliasing$ }),
+            toggle({
+                faClass: 'fa-signature',
+                obs: this.antiAliasing$,
+            }),
         ]
         this.antiAliasing$
             .pipe(

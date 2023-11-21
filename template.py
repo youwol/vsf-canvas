@@ -17,10 +17,10 @@ folder_path = Path(__file__).parent
 pkg_json = parse_json(folder_path / "package.json")
 
 load_dependencies = {
-    "@youwol/cdn-client": "^2.0.6",
-    "@youwol/flux-view": "^1.1.1",
-    "@youwol/vsf-core": "^0.2.3",
-    "rxjs": "^6.5.5",
+    "@youwol/webpm-client": "^3.0.0",
+    "@youwol/rx-vdom": "^1.0.1",
+    "@youwol/vsf-core": "^0.3.0",
+    "rxjs": "^7.5.6",
     "three": "^0.152.0",
 }
 
@@ -36,7 +36,7 @@ template = Template(
             externals={
                 **load_dependencies,
                 # fv-tabs & stats.js are lazy installed at run time when needed
-                "@youwol/fv-tabs": "^0.2.1",
+                "@youwol/rx-tab-views": "^0.3.0",
                 "stats.js": "^0.17.0",
                 # only dev times for '@types/three', but that way it is installed by consuming libs/apps
                 "@types/three": "^0.152.0",
@@ -61,7 +61,7 @@ for file in [
     "README.md",
     "package.json",
     "jest.config.ts",
-    "tsconfig.json",
+    # "tsconfig.json", tsconfig needs to account for rx-vdom-config
     "webpack.config.ts",
 ]:
     shutil.copyfile(src=folder_path / ".template" / file, dst=folder_path / file)

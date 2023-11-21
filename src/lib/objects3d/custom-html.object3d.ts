@@ -1,6 +1,6 @@
 import { Group } from 'three'
 import { CSS3DObject } from '../renderers'
-import { attr$, render, VirtualDOM } from '@youwol/flux-view'
+import { render, AnyVirtualDOM } from '@youwol/rx-vdom'
 import { Observable } from 'rxjs'
 
 export class CustomHtmlObject3d extends Group {
@@ -8,24 +8,23 @@ export class CustomHtmlObject3d extends Group {
     private readonly object: CSS3DObject
 
     constructor(params: {
-        children: VirtualDOM[]
+        children: AnyVirtualDOM[]
         visible$: Observable<boolean>
     }) {
         super()
         const vDOM = {
+            tag: 'div' as const,
             style: {
                 fontSize: '3px',
             },
-            class: attr$(
-                params.visible$,
-                (d): string => (d ? 'd-flex flex-column' : 'd-none'),
-                {
-                    wrapper: (d) => `${d} align-items-center`,
-                },
-            ),
+            class: {
+                source$: params.visible$,
+                vdomMap: (d): string => (d ? 'd-flex flex-column' : 'd-none'),
+                wrapper: (d) => `${d} align-items-center`,
+            },
             children: params.children,
         }
-        const htmlElement = render(vDOM) as unknown as HTMLDivElement
+        const htmlElement = render(vDOM) as HTMLDivElement
         this.object = new CSS3DObject(htmlElement)
         this.add(this.object)
         this.object.layers.set(0)
