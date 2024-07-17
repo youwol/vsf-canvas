@@ -72,7 +72,7 @@ export class Renderer3DView implements VirtualDOM<'div'> {
                     },
                 ],
                 disconnectedCallback: () => {
-                    this.environment3D.disconnect()
+                    this.environment3D?.disconnect()
                 },
                 connectedCallback: (htmlElement: HTMLDivElement) => {
                     setTimeout(() => {
@@ -104,6 +104,9 @@ export class Renderer3DView implements VirtualDOM<'div'> {
 
                         const observerDisplayed = new IntersectionObserver(
                             (entries, _observer) => {
+                                if (!this.environment3D) {
+                                    return
+                                }
                                 const intersecting = entries.reduce(
                                     (acc, entry) => acc || entry.isIntersecting,
                                     false,
