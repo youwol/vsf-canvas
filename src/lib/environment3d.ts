@@ -150,7 +150,15 @@ export class Environment3D {
     }
 
     disconnect() {
+        if (!this.renderer) {
+            return
+        }
         cancelAnimationFrame(this.animationFrameHandle)
+        this.renderer.forceContextLoss()
+        this.renderer.dispose()
+        this.renderer.domElement.remove()
+        this.controls.dispose()
+        this.renderer = null
     }
 
     setFrontLayer(layer: Immutable<Dynamic3dContent>) {

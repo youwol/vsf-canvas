@@ -1,24 +1,29 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/webpm-client": "^3.0.0",
-        "@youwol/rx-vdom": "^1.0.1",
-        "@youwol/vsf-core": "^0.3.0",
-        "rxjs": "^7.5.6",
-        "three": "^0.152.0",
+        "@types/three": "^0.152.0",
         "@youwol/rx-tab-views": "^0.3.0",
+        "@youwol/rx-vdom": "^1.0.1",
+        "@youwol/vsf-core": "^0.3.2",
+        "@youwol/webpm-client": "^3.0.7",
+        "rxjs": "^7.5.6",
         "stats.js": "^0.17.0",
-        "@types/three": "^0.152.0"
+        "three": "^0.152.0"
     },
     "includedInBundle": {
         "d3-dag": "0.8.2"
     }
 }
 const externals = {
-    "@youwol/webpm-client": {
-        "commonjs": "@youwol/webpm-client",
-        "commonjs2": "@youwol/webpm-client",
-        "root": "@youwol/webpm-client_APIv3"
+    "@types/three": {
+        "commonjs": "@types/three",
+        "commonjs2": "@types/three",
+        "root": "@types/three_APIv0152"
+    },
+    "@youwol/rx-tab-views": {
+        "commonjs": "@youwol/rx-tab-views",
+        "commonjs2": "@youwol/rx-tab-views",
+        "root": "@youwol/rx-tab-views_APIv03"
     },
     "@youwol/rx-vdom": {
         "commonjs": "@youwol/rx-vdom",
@@ -30,30 +35,15 @@ const externals = {
         "commonjs2": "@youwol/vsf-core",
         "root": "@youwol/vsf-core_APIv03"
     },
+    "@youwol/webpm-client": {
+        "commonjs": "@youwol/webpm-client",
+        "commonjs2": "@youwol/webpm-client",
+        "root": "@youwol/webpm-client_APIv3"
+    },
     "rxjs": {
         "commonjs": "rxjs",
         "commonjs2": "rxjs",
         "root": "rxjs_APIv7"
-    },
-    "three": {
-        "commonjs": "three",
-        "commonjs2": "three",
-        "root": "THREE_APIv0152"
-    },
-    "@youwol/rx-tab-views": {
-        "commonjs": "@youwol/rx-tab-views",
-        "commonjs2": "@youwol/rx-tab-views",
-        "root": "@youwol/rx-tab-views_APIv03"
-    },
-    "stats.js": {
-        "commonjs": "stats.js",
-        "commonjs2": "stats.js",
-        "root": "stats.js_APIv017"
-    },
-    "@types/three": {
-        "commonjs": "@types/three",
-        "commonjs2": "@types/three",
-        "root": "@types/three_APIv0152"
     },
     "rxjs/operators": {
         "commonjs": "rxjs/operators",
@@ -62,12 +52,26 @@ const externals = {
             "rxjs_APIv7",
             "operators"
         ]
+    },
+    "stats.js": {
+        "commonjs": "stats.js",
+        "commonjs2": "stats.js",
+        "root": "stats.js_APIv017"
+    },
+    "three": {
+        "commonjs": "three",
+        "commonjs2": "three",
+        "root": "three_APIv0152"
     }
 }
 const exportedSymbols = {
-    "@youwol/webpm-client": {
-        "apiKey": "3",
-        "exportedSymbol": "@youwol/webpm-client"
+    "@types/three": {
+        "apiKey": "0152",
+        "exportedSymbol": "@types/three"
+    },
+    "@youwol/rx-tab-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-tab-views"
     },
     "@youwol/rx-vdom": {
         "apiKey": "1",
@@ -77,25 +81,21 @@ const exportedSymbols = {
         "apiKey": "03",
         "exportedSymbol": "@youwol/vsf-core"
     },
+    "@youwol/webpm-client": {
+        "apiKey": "3",
+        "exportedSymbol": "@youwol/webpm-client"
+    },
     "rxjs": {
         "apiKey": "7",
         "exportedSymbol": "rxjs"
-    },
-    "three": {
-        "apiKey": "0152",
-        "exportedSymbol": "THREE"
-    },
-    "@youwol/rx-tab-views": {
-        "apiKey": "03",
-        "exportedSymbol": "@youwol/rx-tab-views"
     },
     "stats.js": {
         "apiKey": "017",
         "exportedSymbol": "stats.js"
     },
-    "@types/three": {
+    "three": {
         "apiKey": "0152",
-        "exportedSymbol": "@types/three"
+        "exportedSymbol": "three"
     }
 }
 
@@ -119,7 +119,7 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-canvas',
         assetId:'QHlvdXdvbC92c2YtY2FudmFz',
-    version:'0.3.1-wip',
+    version:'0.3.2-wip',
     shortDescription:"3D rendering of vs-flow's workflow.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-canvas&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-canvas',
@@ -165,7 +165,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-canvas#0.3.1-wip~dist/@youwol/vsf-canvas/${entry.name}.js`
+            `@youwol/vsf-canvas#0.3.2-wip~dist/@youwol/vsf-canvas/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),

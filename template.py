@@ -17,16 +17,16 @@ folder_path = Path(__file__).parent
 pkg_json = parse_json(folder_path / "package.json")
 
 load_dependencies = {
-    "@youwol/webpm-client": "^3.0.0",
+    "@youwol/webpm-client": "^3.0.7",
     "@youwol/rx-vdom": "^1.0.1",
-    "@youwol/vsf-core": "^0.3.0",
+    "@youwol/vsf-core": "^0.3.2",
     "rxjs": "^7.5.6",
     "three": "^0.152.0",
 }
 
 template = Template(
     path=folder_path,
-    type=PackageType.Library,
+    type=PackageType.LIBRARY,
     name=pkg_json["name"],
     version=pkg_json["version"],
     shortDescription=pkg_json["description"],
